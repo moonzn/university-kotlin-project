@@ -41,6 +41,24 @@ data class JSONObject(
     }
 }
 
+data class JSONArray(
+    override val parent: JSONStructure? = null,
+    val children: MutableList<JSONElement> = mutableListOf<JSONElement>()
+): JSONStructure {
+
+    override fun addElement(): JSONStructure {
+        TODO("Not yet implemented")
+    }
+
+    override fun depth(): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun toText(): String {
+        TODO("Not yet implemented")
+    }
+}
+
 fun main() {
     val cu = JSONObject(name = "object")
     val cu2 = JSONObject()
