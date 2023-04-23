@@ -8,10 +8,30 @@ sealed interface JSONStructure: JSONElement {
     fun addElement(): JSONStructure
 }
 
-data class JSONValue(
-    val value: Any? = null,
+class JSONValue: JSONElement {
+
+    val value: Any?
     override val parent: JSONStructure
-): JSONElement {
+
+    constructor(value: String? = null, parent: JSONStructure) {
+        this.value = value
+        this.parent = parent
+    }
+
+    constructor(value: Int, parent: JSONStructure) {
+        this.value = value
+        this.parent = parent
+    }
+
+    constructor(value: Double, parent: JSONStructure) {
+        this.value = value
+        this.parent = parent
+    }
+
+    constructor(value: Boolean, parent: JSONStructure) {
+        this.value = value
+        this.parent = parent
+    }
 
     override fun depth(): Int {
         TODO("Not yet implemented")
@@ -25,7 +45,7 @@ data class JSONValue(
 data class JSONObject(
     val name: String? = null,
     override val parent: JSONStructure? = null,
-    val children: MutableList<JSONElement> = mutableListOf<JSONElement>()
+    val children: MutableList<JSONElement> = mutableListOf()
 ): JSONStructure {
 
     override fun addElement(): JSONStructure {
@@ -43,7 +63,7 @@ data class JSONObject(
 
 data class JSONArray(
     override val parent: JSONStructure? = null,
-    val children: MutableList<JSONElement> = mutableListOf<JSONElement>()
+    val children: MutableList<JSONElement> = mutableListOf()
 ): JSONStructure {
 
     override fun addElement(): JSONStructure {
@@ -69,8 +89,11 @@ fun main() {
     val bool = JSONValue(parent = cu, value = "2")
     val string = JSONValue(parent = cu, value = true)
     val nul = JSONValue(parent = cu, value = null)
+    val test = JSONValue(null, cu)
 
-    print(nullvalue)
+    print(nullvalue.value)
     print("\n")
-    print(integer)
+    print(integer.value)
+    print("\n")
+    print(test.value)
 }
