@@ -1,15 +1,15 @@
-sealed interface JSONElement {
+interface JSONElement {
     val parent: JSONElement?
     fun depth(): Int
     fun toText(): String
 }
 
-sealed interface JSONStructure: JSONElement {
-    fun addElement(): JSONStructure
+interface JSONStructure: JSONElement {
+    val children: MutableList<JSONElement>
+    fun addElement(child: JSONElement)
 }
 
 class JSONValue: JSONElement {
-
     val value: Any?
     override val parent: JSONStructure
 
@@ -42,14 +42,17 @@ class JSONValue: JSONElement {
     }
 }
 
-data class JSONObject(
-    val name: String? = null,
+data class JSONArray(
     override val parent: JSONStructure? = null,
-    val children: MutableList<JSONElement> = mutableListOf()
+    override val children: MutableList<JSONElement> = mutableListOf()
 ): JSONStructure {
 
-    override fun addElement(): JSONStructure {
-        TODO("Not yet implemented")
+    init {
+        parent?.children?.add(this)
+    }
+
+    override fun addElement(child: JSONElement) {
+        TODO()
     }
 
     override fun depth(): Int {
@@ -61,12 +64,16 @@ data class JSONObject(
     }
 }
 
-data class JSONArray(
+data class JSONObject(
     override val parent: JSONStructure? = null,
-    val children: MutableList<JSONElement> = mutableListOf()
+    override val children: MutableList<JSONElement> = mutableListOf()
 ): JSONStructure {
 
-    override fun addElement(): JSONStructure {
+    init {
+
+    }
+
+    override fun addElement(child: JSONElement) {
         TODO("Not yet implemented")
     }
 
@@ -80,9 +87,9 @@ data class JSONArray(
 }
 
 fun main() {
-    val cu = JSONObject(name = "object")
+    val cu = JSONObject()
     val cu2 = JSONObject()
-    val cu3 = JSONObject(name = "yes", parent = cu)
+    val cu3 = JSONObject(parent = cu)
     val nullvalue = JSONValue(parent = cu)
     val integer = JSONValue(parent = cu, value = 2)
     val double = JSONValue(parent = cu, value = 2.0)
@@ -90,10 +97,14 @@ fun main() {
     val string = JSONValue(parent = cu, value = true)
     val nul = JSONValue(parent = cu, value = null)
     val test = JSONValue(null, cu)
+    val array = JSONArray()
+    val child1 = JSONValue(parent = array, value = "Child")
+    val child2 = JSONValue(parent = array, value = 27)
+    val obj2 = JSONObject()
+    array.addElement(cu2)
+    array.addElement(obj2)
 
-    print(nullvalue.value)
-    print("\n")
-    print(integer.value)
-    print("\n")
-    print(test.value)
+    print(array)
 }
+
+// TODO RETIRAR PARENT DO CONSTRUTOR E ATUALIZA LO NO ADD ELEMENT
