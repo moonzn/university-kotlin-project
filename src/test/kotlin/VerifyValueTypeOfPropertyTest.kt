@@ -31,10 +31,10 @@ class VerifyValueTypeOfPropertyTest {
 
         mainObject.addElement("uc", JSONString("PA"))
         mainObject.addElement("ects", JSONDouble(6.0))
-        mainObject.addElement("data-exame", JSONNull())
+        mainObject.addElement("data-exame", JSONNull)
         mainObject.addElement("inscritos", array)
 
-        val valueTypeVisitor = VerifyValueTypeVisitor(key="numero")
+        val valueTypeVisitor = VerifyJSONElementTypeVisitor(key="numero", clazz=JSONInt::class)
         mainObject.accept(valueTypeVisitor)
 
         assertTrue(valueTypeVisitor.integrity())
@@ -60,10 +60,10 @@ class VerifyValueTypeOfPropertyTest {
 
         mainObject.addElement("uc", JSONString("PA"))
         mainObject.addElement("ects", JSONDouble(6.0))
-        mainObject.addElement("data-exame", JSONNull())
+        mainObject.addElement("data-exame", JSONNull)
         mainObject.addElement("inscritos", array)
 
-        val valueTypeVisitor = VerifyValueTypeVisitor(key="numero")
+        val valueTypeVisitor = VerifyJSONElementTypeVisitor(key="numero", clazz=JSONInt::class)
         mainObject.accept(valueTypeVisitor)
 
         assertFalse(valueTypeVisitor.integrity())

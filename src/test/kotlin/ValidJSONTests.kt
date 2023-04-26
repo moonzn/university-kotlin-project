@@ -29,7 +29,7 @@ class ValidJSONTests {
 
         mainObject.addElement("uc", JSONString("PA"))
         mainObject.addElement("ects", JSONDouble(6.0))
-        mainObject.addElement("data-exame", JSONNull())
+        mainObject.addElement("data-exame", JSONNull)
         mainObject.addElement("inscritos", array)
 
         assertEquals(

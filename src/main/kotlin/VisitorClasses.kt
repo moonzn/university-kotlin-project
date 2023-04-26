@@ -1,34 +1,33 @@
 import kotlin.properties.Delegates
+import kotlin.reflect.KClass
 
-class GetValuesWithKeyVisitor(val key: String) : Visitor {
-    private val values = mutableListOf<JSONElement>()
+class GetJSONElementsVisitor(val key: String) : Visitor {
+    private val jsonElements = mutableListOf<JSONElement>()
 
-    fun output(): MutableList<JSONElement> = values
+    fun getJSONElements(): MutableList<JSONElement> = jsonElements
 
     override fun visit(c: Map.Entry<String, JSONElement>): Boolean {
-        if (c.key == key){
-            values.add(c.value)
+        if (c.key == key) {
+            jsonElements.add(c.value)
         }
         return true
     }
 }
 
-// TODO Permitir que sejam passadas keys para serem verificadas
-class GetObjectsWithKeysVisitor() : Visitor {
-    private val objs = mutableListOf<JSONObject>()
+class GetJSONObjectsVisitor(val containsKeys: List<String>) : Visitor {
+    private val jsonObjects = mutableListOf<JSONObject>()
 
-    fun output(): MutableList<JSONObject> = objs
+    fun getJSONObjects(): MutableList<JSONObject> = jsonObjects
 
     override fun visit(c: JSONObject): Boolean {
-        if (c.containsKey("numero") && c.containsKey("nome")){
-            objs.add(c)
+        if (c.containsKeys(containsKeys)) {
+            jsonObjects.add(c)
         }
         return true
     }
 }
 
-// TODO: Permitir que seja dada um classe como parametro para ser comparada
-class VerifyValueTypeVisitor(val key: String): Visitor {
+class VerifyJSONElementTypeVisitor(val key: String, val clazz: KClass<*>): Visitor {
     private var integrity = true
     private val offenders = mutableListOf<Map.Entry<String, JSONElement>>()
 
@@ -37,29 +36,36 @@ class VerifyValueTypeVisitor(val key: String): Visitor {
     fun offenders(): MutableList<Map.Entry<String, JSONElement>> = offenders
 
     override fun visit(c: Map.Entry<String, JSONElement>): Boolean {
-        if (c.key == key && c.value !is JSONInt){
+
+        if (c.key == key && !clazz.isInstance(c.value)) {
             integrity = false
             offenders.add(c)
-
         }
         return true
     }
 }
 
-// TODO: a propriedade inscritos consiste num array onde todos os objetos têm a mesma estrutura
-class VerifyObjectsInArrayVisitor(val key: String, val structure: List<String>): Visitor {
-    private var integrity by Delegates.notNull<Boolean>()
-    private lateinit var offenders: MutableList<JSONElement>
+class VerifyJSONObjectsStructureVisitor(val key: String, val structure: List<String>): Visitor {
+    private var integrity = true
+    private var offenders = mutableListOf<JSONElement>()
 
     fun integrity(): Boolean = integrity
 
     fun offenders(): MutableList<JSONElement> = offenders
 
+
     override fun visit(c: Map.Entry<String, JSONElement>): Boolean {
         if (c.key == key && c.value is JSONArray){
-            val output = (c.value as JSONArray).checkAllObjectsStructure(structure)
-            integrity = output.first
-            offenders = output.second
+            (c.value as JSONArray).getChildren().forEach {
+                if (it !is JSONObject) {
+                    integrity = false
+                    offenders.add(it)
+                }
+                else if(!it.hasStructure(structure)) {
+                    integrity = false
+                    offenders.add(it)
+                }
+            }
         }
         return true
     }

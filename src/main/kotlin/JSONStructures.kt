@@ -19,23 +19,7 @@ class JSONArray(): JSONStructure {
         children.add(value)
     }
 
-    fun checkAllObjectsStructure(structure: List<String>): Pair<Boolean, MutableList<JSONElement>> {
-        var integrity = true
-        val offenders = mutableListOf<JSONElement>()
-
-        children.forEach { obj ->
-            if(obj is JSONObject) {
-                if (!obj.containsKeys(structure)) {
-                    integrity = false
-                    offenders.add(obj)
-                }
-            } else {
-                integrity = false
-                offenders.add(obj)
-            }
-        }
-    return Pair(integrity, offenders)
-    }
+    fun getChildren() = children
 
 }
 
@@ -60,9 +44,9 @@ class JSONObject(): JSONStructure {
         children[key] = value
     }
 
-    fun containsKey(key: String): Boolean = children.containsKey(key)
-
     fun containsKeys(keys: List<String>): Boolean = keys.all {children.containsKey(it)}
+
+    fun hasStructure(keys: List<String>): Boolean = keys.size == children.keys.size && containsKeys(keys)
 }
 
 fun Map.Entry<String, JSONElement>.accept(visitor: Visitor) {

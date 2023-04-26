@@ -31,10 +31,10 @@ class VerifyObjectsInArrayShareStructureTest {
 
         mainObject.addElement("uc", JSONString("PA"))
         mainObject.addElement("ects", JSONDouble(6.0))
-        mainObject.addElement("data-exame", JSONNull())
+        mainObject.addElement("data-exame", JSONNull)
         mainObject.addElement("inscritos", array)
 
-        val objectStructureVisitor = VerifyObjectsInArrayVisitor(key="inscritos", structure=listOf("numero", "nome", "internacional"))
+        val objectStructureVisitor = VerifyJSONObjectsStructureVisitor(key="inscritos", structure=listOf("numero", "nome", "internacional"))
         mainObject.accept(objectStructureVisitor)
 
         assertTrue(objectStructureVisitor.integrity())
@@ -61,10 +61,10 @@ class VerifyObjectsInArrayShareStructureTest {
 
         mainObject.addElement("uc", JSONString("PA"))
         mainObject.addElement("ects", JSONDouble(6.0))
-        mainObject.addElement("data-exame", JSONNull())
+        mainObject.addElement("data-exame", JSONNull)
         mainObject.addElement("inscritos", array)
 
-        val objectStructureVisitor = VerifyObjectsInArrayVisitor(key="inscritos", structure=listOf("numero", "nome", "internacional"))
+        val objectStructureVisitor = VerifyJSONObjectsStructureVisitor(key="inscritos", structure=listOf("numero", "nome", "internacional"))
         mainObject.accept(objectStructureVisitor)
 
         assertFalse(objectStructureVisitor.integrity())
@@ -93,10 +93,10 @@ class VerifyObjectsInArrayShareStructureTest {
 
         mainObject.addElement("uc", JSONString("PA"))
         mainObject.addElement("ects", JSONDouble(6.0))
-        mainObject.addElement("data-exame", JSONNull())
+        mainObject.addElement("data-exame", JSONNull)
         mainObject.addElement("inscritos", array)
 
-        val objectStructureVisitor = VerifyObjectsInArrayVisitor(key="inscritos", structure=listOf("numero", "nome", "internacional"))
+        val objectStructureVisitor = VerifyJSONObjectsStructureVisitor(key="inscritos", structure=listOf("numero", "nome", "internacional"))
         mainObject.accept(objectStructureVisitor)
 
         assertFalse(objectStructureVisitor.integrity())

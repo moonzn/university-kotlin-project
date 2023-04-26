@@ -29,13 +29,15 @@ class ObjectsWithPropertyNameTest {
 
         mainObject.addElement("uc", JSONString("PA"))
         mainObject.addElement("ects", JSONDouble(6.0))
-        mainObject.addElement("data-exame", JSONNull())
+        mainObject.addElement("data-exame", JSONNull)
         mainObject.addElement("inscritos", array)
 
-        val objectsVisitor = GetObjectsWithKeysVisitor()
+        val objectsVisitor = GetJSONObjectsVisitor(containsKeys=listOf("numero", "nome"))
         mainObject.accept(objectsVisitor)
 
-        assertEquals("[{\"numero\": 101101, \"nome\": \"Dave Farley\", \"internacional\": true}, {\"numero\": 101102, \"nome\": \"Martin Fowler\", \"internacional\": true}, {\"numero\": 101103, \"nome\": \"André Santos\", \"internacional\": false}]", objectsVisitor.output().toString())
+        val values = mutableListOf<JSONObject>(arrayObject1, arrayObject2, arrayObject3)
+
+        assertEquals(values, objectsVisitor.getJSONObjects())
     }
 
     @Test
@@ -59,12 +61,14 @@ class ObjectsWithPropertyNameTest {
 
         mainObject.addElement("uc", JSONString("PA"))
         mainObject.addElement("ects", JSONDouble(6.0))
-        mainObject.addElement("data-exame", JSONNull())
+        mainObject.addElement("data-exame", JSONNull)
         mainObject.addElement("inscritos", array)
 
-        val objectsVisitor = GetObjectsWithKeysVisitor()
+        val objectsVisitor = GetJSONObjectsVisitor(containsKeys=listOf("numero", "nome"))
         mainObject.accept(objectsVisitor)
 
-        assertEquals("[{\"numero\": 101102, \"nome\": \"Martin Fowler\", \"internacional\": true}, {\"numero\": 101103, \"nome\": \"André Santos\", \"internacional\": false}]", objectsVisitor.output().toString())
+        val values = mutableListOf<JSONObject>(arrayObject2, arrayObject3)
+
+        assertEquals(values, objectsVisitor.getJSONObjects())
     }
 }

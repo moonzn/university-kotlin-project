@@ -23,23 +23,38 @@ fun main() {
 
     mainObject.addElement("uc", JSONString("PA"))
     mainObject.addElement("ects", JSONDouble(6.0))
-    mainObject.addElement("data-exame", JSONNull())
+    mainObject.addElement("data-exame", JSONNull)
     mainObject.addElement("inscritos", array)
 
     println(mainObject.toString())
 
-    val valuesVisitor = GetValuesWithKeyVisitor(key="numero")
+    val valuesVisitor = GetJSONElementsVisitor(key="numero")
     mainObject.accept(valuesVisitor)
-    println(valuesVisitor.output())
+    println(valuesVisitor.getJSONElements())
+
+    val vi3 = VerifyJSONElementTypeVisitor(key="numero", clazz=JSONInt::class)
+    mainObject.accept(vi3)
+    println(vi3.integrity())
+    println(vi3.offenders())
+
+    val teste = JSONObject()
+    teste.addElement("ola", JSONInt(1))
+    teste.addElement("ola2", JSONInt(2))
+    teste.addElement("ola3", JSONInt(3))
+    //teste.addElement("ola4", JSONInt(4))
+
+    println(teste.hasStructure(listOf("ola", "ola2", "ola3", "ola4")))
+
+    val vi4 = VerifyJSONObjectsStructureVisitor(key="inscritos", structure = listOf("numero", "nome", "internacional2"))
+    mainObject.accept(vi4)
+    println(vi4.integrity())
+    println(vi4.offenders())
 
     /*val vi2 = GetObjectsWithKeysVisitor()
     mainObject.accept(vi2)
     println(vi2.objs)
 
-    val vi3 = VerifyValueTypeVisitor(key="numero")
-    mainObject.accept(vi3)
-    println(vi3.integrity)
-    println(vi3.offenders)
+
 
     val vi4 = VerifyObjectsInArrayVisitor(key="inscritos", structure = listOf("numero", "nome", "internacional"))
     mainObject.accept(vi4)

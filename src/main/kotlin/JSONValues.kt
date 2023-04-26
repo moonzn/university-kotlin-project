@@ -1,4 +1,4 @@
-class JSONString(
+data class JSONString(
     private val value: String
 ): JSONValue {
 
@@ -7,7 +7,7 @@ class JSONString(
     }
 }
 
-class JSONBool(
+data class JSONBool(
     private val value: Boolean
 ): JSONValue {
     override fun toString(): String {
@@ -15,7 +15,7 @@ class JSONBool(
     }
 }
 
-class JSONInt(
+data class JSONInt(
     private val value: Int
 ): JSONValue {
     override fun toString(): String {
@@ -23,7 +23,7 @@ class JSONInt(
     }
 }
 
-class JSONDouble(
+data class JSONDouble(
     private val value: Double
 ): JSONValue {
     override fun toString(): String {
@@ -31,7 +31,7 @@ class JSONDouble(
     }
 }
 
-class JSONNull(): JSONValue {
+object JSONNull: JSONValue {
     private val value = null
     override fun toString(): String {
         return "null"

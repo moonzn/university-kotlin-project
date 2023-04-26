@@ -29,13 +29,17 @@ class ValuesWithPropertyNameSearchTest {
 
         mainObject.addElement("uc", JSONString("PA"))
         mainObject.addElement("ects", JSONDouble(6.0))
-        mainObject.addElement("data-exame", JSONNull())
+        mainObject.addElement("data-exame", JSONNull)
         mainObject.addElement("inscritos", array)
 
-        val valuesVisitor = GetValuesWithKeyVisitor(key="numero")
+        val valuesVisitor = GetJSONElementsVisitor(key="numero")
         mainObject.accept(valuesVisitor)
 
-        assertEquals("[101101, 101102, 101103]", valuesVisitor.output().toString())
+        val values = mutableListOf<JSONElement>(
+            JSONInt(101101), JSONInt(101102), JSONInt(101103)
+        )
+
+        assertEquals(values, valuesVisitor.getJSONElements())
     }
 
     @Test
@@ -59,13 +63,17 @@ class ValuesWithPropertyNameSearchTest {
 
         mainObject.addElement("uc", JSONString("PA"))
         mainObject.addElement("ects", JSONDouble(6.0))
-        mainObject.addElement("data-exame", JSONNull())
+        mainObject.addElement("data-exame", JSONNull)
         mainObject.addElement("inscritos", array)
 
-        val valuesVisitor = GetValuesWithKeyVisitor(key="numero")
+        val valuesVisitor = GetJSONElementsVisitor(key="numero")
         mainObject.accept(valuesVisitor)
 
-        assertEquals("[101102, 101103]", valuesVisitor.output().toString())
+        val values = mutableListOf<JSONElement>(
+            JSONInt(101102), JSONInt(101103)
+        )
+
+        assertEquals(values, valuesVisitor.getJSONElements())
     }
 
     @Test
@@ -91,13 +99,15 @@ class ValuesWithPropertyNameSearchTest {
 
         mainObject.addElement("uc", JSONString("PA"))
         mainObject.addElement("ects", JSONDouble(6.0))
-        mainObject.addElement("data-exame", JSONNull())
+        mainObject.addElement("data-exame", JSONNull)
         mainObject.addElement("inscritos", array)
 
-        val valuesVisitor = GetValuesWithKeyVisitor(key="numero")
+        val valuesVisitor = GetJSONElementsVisitor(key="numero")
         mainObject.accept(valuesVisitor)
 
-        assertEquals("[]", valuesVisitor.output().toString())
+        val values = mutableListOf<JSONElement>()
+
+        assertEquals(values, valuesVisitor.getJSONElements())
     }
 
     @Test
@@ -120,14 +130,18 @@ class ValuesWithPropertyNameSearchTest {
 
         mainObject.addElement("uc", JSONString("PA"))
         mainObject.addElement("ects", JSONDouble(6.0))
-        mainObject.addElement("data-exame", JSONNull())
+        mainObject.addElement("data-exame", JSONNull)
         mainObject.addElement("inscritos", array)
 
         // TODO key="numero" -> key="nome"
-        val valuesVisitor = GetValuesWithKeyVisitor(key="nome")
+        val valuesVisitor = GetJSONElementsVisitor(key="nome")
         mainObject.accept(valuesVisitor)
 
-        assertEquals("[\"Dave Farley\", \"Martin Fowler\", \"André Santos\"]", valuesVisitor.output().toString())
+        val values = mutableListOf<JSONElement>(
+            JSONString("Dave Farley"), JSONString("Martin Fowler"), JSONString("André Santos")
+        )
+
+        assertEquals(values, valuesVisitor.getJSONElements())
     }
 
     @Test
@@ -151,13 +165,17 @@ class ValuesWithPropertyNameSearchTest {
         // TODO "uc" -> "nome"
         mainObject.addElement("nome", JSONString("PA"))
         mainObject.addElement("ects", JSONDouble(6.0))
-        mainObject.addElement("data-exame", JSONNull())
+        mainObject.addElement("data-exame", JSONNull)
         mainObject.addElement("inscritos", array)
 
         // TODO key="numero" -> key="nome"
-        val valuesVisitor = GetValuesWithKeyVisitor(key="nome")
+        val valuesVisitor = GetJSONElementsVisitor(key="nome")
         mainObject.accept(valuesVisitor)
 
-        assertEquals("[\"PA\", \"Dave Farley\", \"Martin Fowler\", \"André Santos\"]", valuesVisitor.output().toString())
+        val values = mutableListOf<JSONElement>(JSONString("PA"), JSONString("Dave Farley"),
+            JSONString("Martin Fowler"), JSONString("André Santos")
+        )
+
+        assertEquals(values, valuesVisitor.getJSONElements())
     }
 }
