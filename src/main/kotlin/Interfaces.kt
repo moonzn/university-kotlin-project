@@ -9,9 +9,7 @@ interface JSONValue: JSONElement {
     }
 }
 
-interface JSONStructure: JSONElement {
-
-}
+interface JSONStructure: JSONElement
 
 interface Visitor {
     fun visit(c: JSONElement) : Boolean = true

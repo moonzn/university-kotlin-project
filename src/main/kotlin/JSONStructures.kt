@@ -20,7 +20,6 @@ class JSONArray(): JSONStructure {
     }
 
     fun getChildren() = children
-
 }
 
 class JSONObject(): JSONStructure {
