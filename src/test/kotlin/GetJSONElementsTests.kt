@@ -1,7 +1,7 @@
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ValuesWithPropertyNameSearchTest {
+class GetJSONElementsTests {
 
     val mainObject = JSONObject()
     val array = JSONArray()
@@ -35,11 +35,11 @@ class ValuesWithPropertyNameSearchTest {
         val valuesVisitor = GetJSONElementsVisitor(key="numero")
         mainObject.accept(valuesVisitor)
 
-        val values = mutableListOf<JSONElement>(
+        val expected = mutableListOf<JSONElement>(
             JSONInt(101101), JSONInt(101102), JSONInt(101103)
         )
 
-        assertEquals(values, valuesVisitor.getJSONElements())
+        assertEquals(expected, valuesVisitor.getJSONElements())
     }
 
     @Test
@@ -69,11 +69,11 @@ class ValuesWithPropertyNameSearchTest {
         val valuesVisitor = GetJSONElementsVisitor(key="numero")
         mainObject.accept(valuesVisitor)
 
-        val values = mutableListOf<JSONElement>(
+        val expected = mutableListOf<JSONElement>(
             JSONInt(101102), JSONInt(101103)
         )
 
-        assertEquals(values, valuesVisitor.getJSONElements())
+        assertEquals(expected, valuesVisitor.getJSONElements())
     }
 
     @Test
@@ -105,9 +105,9 @@ class ValuesWithPropertyNameSearchTest {
         val valuesVisitor = GetJSONElementsVisitor(key="numero")
         mainObject.accept(valuesVisitor)
 
-        val values = mutableListOf<JSONElement>()
+        val expected = mutableListOf<JSONElement>()
 
-        assertEquals(values, valuesVisitor.getJSONElements())
+        assertEquals(expected, valuesVisitor.getJSONElements())
     }
 
     @Test
@@ -137,11 +137,11 @@ class ValuesWithPropertyNameSearchTest {
         val valuesVisitor = GetJSONElementsVisitor(key="nome")
         mainObject.accept(valuesVisitor)
 
-        val values = mutableListOf<JSONElement>(
+        val expected = mutableListOf<JSONElement>(
             JSONString("Dave Farley"), JSONString("Martin Fowler"), JSONString("André Santos")
         )
 
-        assertEquals(values, valuesVisitor.getJSONElements())
+        assertEquals(expected, valuesVisitor.getJSONElements())
     }
 
     @Test
@@ -172,10 +172,10 @@ class ValuesWithPropertyNameSearchTest {
         val valuesVisitor = GetJSONElementsVisitor(key="nome")
         mainObject.accept(valuesVisitor)
 
-        val values = mutableListOf<JSONElement>(JSONString("PA"), JSONString("Dave Farley"),
+        val expected = mutableListOf<JSONElement>(JSONString("PA"), JSONString("Dave Farley"),
             JSONString("Martin Fowler"), JSONString("André Santos")
         )
 
-        assertEquals(values, valuesVisitor.getJSONElements())
+        assertEquals(expected, valuesVisitor.getJSONElements())
     }
 }

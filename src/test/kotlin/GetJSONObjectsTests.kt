@@ -1,7 +1,7 @@
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ObjectsWithPropertyNameTest {
+class GetJSONObjectsTests {
 
     val mainObject = JSONObject()
     val array = JSONArray()
@@ -35,9 +35,9 @@ class ObjectsWithPropertyNameTest {
         val objectsVisitor = GetJSONObjectsVisitor(containsKeys=listOf("numero", "nome"))
         mainObject.accept(objectsVisitor)
 
-        val values = mutableListOf<JSONObject>(arrayObject1, arrayObject2, arrayObject3)
+        val expected = mutableListOf<JSONObject>(arrayObject1, arrayObject2, arrayObject3)
 
-        assertEquals(values, objectsVisitor.getJSONObjects())
+        assertEquals(expected, objectsVisitor.getJSONObjects())
     }
 
     @Test
@@ -67,8 +67,8 @@ class ObjectsWithPropertyNameTest {
         val objectsVisitor = GetJSONObjectsVisitor(containsKeys=listOf("numero", "nome"))
         mainObject.accept(objectsVisitor)
 
-        val values = mutableListOf<JSONObject>(arrayObject2, arrayObject3)
+        val expected = mutableListOf<JSONObject>(arrayObject2, arrayObject3)
 
-        assertEquals(values, objectsVisitor.getJSONObjects())
+        assertEquals(expected, objectsVisitor.getJSONObjects())
     }
 }

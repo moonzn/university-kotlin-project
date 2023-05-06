@@ -3,7 +3,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class VerifyObjectsInArrayShareStructureTest {
+class VerifyJSONObjectsStructureTests {
 
     val mainObject = JSONObject()
     val array = JSONArray()
@@ -37,7 +37,10 @@ class VerifyObjectsInArrayShareStructureTest {
         val objectStructureVisitor = VerifyJSONObjectsStructureVisitor(key="inscritos", structure=listOf("numero", "nome", "internacional"))
         mainObject.accept(objectStructureVisitor)
 
+        val expected = mutableListOf<JSONElement>()
+
         assertTrue(objectStructureVisitor.integrity())
+        assertEquals(expected, objectStructureVisitor.offenders())
     }
 
     @Test
@@ -67,8 +70,10 @@ class VerifyObjectsInArrayShareStructureTest {
         val objectStructureVisitor = VerifyJSONObjectsStructureVisitor(key="inscritos", structure=listOf("numero", "nome", "internacional"))
         mainObject.accept(objectStructureVisitor)
 
+        val expected = mutableListOf<JSONElement>(arrayObject1)
+
         assertFalse(objectStructureVisitor.integrity())
-        assertEquals("[{\"numerX\": 101101, \"nome\": \"Dave Farley\", \"internacional\": true}]", objectStructureVisitor.offenders().toString())
+        assertEquals(expected, objectStructureVisitor.offenders())
     }
 
     @Test
@@ -99,7 +104,9 @@ class VerifyObjectsInArrayShareStructureTest {
         val objectStructureVisitor = VerifyJSONObjectsStructureVisitor(key="inscritos", structure=listOf("numero", "nome", "internacional"))
         mainObject.accept(objectStructureVisitor)
 
+        val expected = mutableListOf<JSONElement>(arrayObject1, arrayObject2)
+
         assertFalse(objectStructureVisitor.integrity())
-        assertEquals("[{\"numerX\": 101101, \"nome\": \"Dave Farley\", \"internacional\": true}, {\"numerX\": 101102, \"nome\": \"Martin Fowler\", \"internacional\": true}]", objectStructureVisitor.offenders().toString())
+        assertEquals(expected, objectStructureVisitor.offenders())
     }
 }

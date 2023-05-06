@@ -3,7 +3,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class VerifyValueTypeOfPropertyTest {
+class VerifyJSONElementTypeTests {
 
     val mainObject = JSONObject()
     val array = JSONArray()
@@ -37,7 +37,10 @@ class VerifyValueTypeOfPropertyTest {
         val valueTypeVisitor = VerifyJSONElementTypeVisitor(key="numero", clazz=JSONInt::class)
         mainObject.accept(valueTypeVisitor)
 
+        val expected = mutableListOf<Map.Entry<String, JSONElement>>()
+
         assertTrue(valueTypeVisitor.integrity())
+        assertEquals(expected, valueTypeVisitor.offenders())
     }
 
     @Test
@@ -66,7 +69,9 @@ class VerifyValueTypeOfPropertyTest {
         val valueTypeVisitor = VerifyJSONElementTypeVisitor(key="numero", clazz=JSONInt::class)
         mainObject.accept(valueTypeVisitor)
 
+        val expected = mapOf<String, JSONElement>(Pair("numero", JSONDouble(3.0)))
+
         assertFalse(valueTypeVisitor.integrity())
-        assertEquals("[numero=3.0]", valueTypeVisitor.offenders().toString())
+        assertEquals(expected.entries.toMutableList(), valueTypeVisitor.offenders())
     }
 }
