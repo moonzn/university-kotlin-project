@@ -11,6 +11,18 @@ interface JSONValue: JSONElement {
 
 interface JSONStructure: JSONElement
 
+interface JSONArrayObserver {
+    fun elementAdded(value: JSONElement) { }
+    fun elementRemoved(value: JSONElement) { }
+    fun elementReplaced(old: JSONElement, new: JSONElement) { }
+}
+
+interface JSONObjectObserver {
+    fun elementAdded(value: JSONElement) { }
+    fun elementRemoved(value: JSONElement) { }
+    fun elementReplaced(old: JSONElement, new: JSONElement) { }
+}
+
 interface Visitor {
     fun visit(c: JSONElement) : Boolean = true
     fun visit(c: JSONArray) : Boolean = true

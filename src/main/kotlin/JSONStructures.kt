@@ -1,6 +1,12 @@
-class JSONArray(): JSONStructure {
+class JSONArray: JSONStructure {
 
     private val children : MutableList<JSONElement> = mutableListOf()
+    private val observers: MutableList<JSONArrayObserver> = mutableListOf()
+
+    fun addObserver(observer: JSONArrayObserver) = observers.add(observer)
+
+    fun removeObserver(observer: JSONArrayObserver) = observers.remove(observer)
+
 
     override fun toString(): String {
         return children.joinToString(prefix = "[", postfix = "]", separator = ", ")
@@ -15,16 +21,32 @@ class JSONArray(): JSONStructure {
         visitor.endVisit(this)
     }
 
-    fun addElement(value: JSONElement){
-        children.add(value)
+    fun addElement(value: JSONElement) {
+        if(children.add(value))
+            observers.forEach {
+                it.elementAdded(value)
+            }
+    }
+
+    fun replaceElement(old: JSONElement, new: JSONElement) {
+        children[children.indexOf(old)] = new
+
+        observers.forEach {
+            it.elementReplaced(old, new)
+        }
     }
 
     fun getChildren() = children
 }
 
-class JSONObject(): JSONStructure {
+class JSONObject: JSONStructure {
 
     private val children : MutableMap<String,JSONElement> = mutableMapOf()
+    private val observers: MutableList<JSONObjectObserver> = mutableListOf()
+
+    fun addObserver(observer: JSONObjectObserver) = observers.add(observer)
+
+    fun removeObserver(observer: JSONObjectObserver) = observers.remove(observer)
 
     override fun toString(): String {
         return children.map { "\"${it.key}\": ${it.value}" }.joinToString(prefix = "{", postfix = "}", separator = ", ")
@@ -47,6 +69,8 @@ class JSONObject(): JSONStructure {
 
     fun hasStructure(keys: List<String>): Boolean = keys.size == children.keys.size && containsKeys(keys)
 }
+
+
 
 fun Map.Entry<String, JSONElement>.accept(visitor: Visitor) {
     if (visitor.visit(this)) {
