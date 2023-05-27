@@ -13,14 +13,14 @@ interface JSONStructure: JSONElement
 
 interface JSONArrayObserver {
     fun elementAdded(value: JSONElement) { }
-    fun elementRemoved(value: JSONElement) { }
-    fun elementReplaced(old: JSONElement, new: JSONElement) { }
+    fun elementRemoved(index: Int) { }
+    fun elementReplaced(index: Int, new: JSONElement) { }
 }
 
 interface JSONObjectObserver {
     fun elementAdded(value: JSONElement) { }
-    fun elementRemoved(value: JSONElement) { }
-    fun elementReplaced(old: JSONElement, new: JSONElement) { }
+    fun elementRemoved(key: String) { }
+    fun elementReplaced(key: String, new: JSONElement) { }
 }
 
 interface Visitor {

@@ -25,17 +25,14 @@ class JSONViewerView(private val frame: JFrame, private val jsonSource: JSONArra
         jsonSource.addObserver(object: JSONArrayObserver {
             override fun elementAdded(value: JSONElement) {
                 srcArea.text = jsonSource.toString()
-                println("Viewer: Element Added")
             }
 
-            override fun elementRemoved(value: JSONElement) {
+            override fun elementRemoved(index: Int) {
                 srcArea.text = jsonSource.toString()
-                println("Viewer: Element Added")
             }
 
-            override fun elementReplaced(old: JSONElement, new: JSONElement) {
+            override fun elementReplaced(index: Int, new: JSONElement) {
                 srcArea.text = jsonSource.toString()
-                println("Viewer: Element Added")
             }
         })
     }

@@ -28,11 +28,19 @@ class JSONArray: JSONStructure {
             }
     }
 
-    fun replaceElement(old: JSONElement, new: JSONElement) {
-        children[children.indexOf(old)] = new
+    fun replaceElement(index: Int, new: JSONElement) {
+        children[index] = new
 
         observers.forEach {
-            it.elementReplaced(old, new)
+            it.elementReplaced(index, new)
+        }
+    }
+
+    fun elementRemoved(index: Int) {
+        children.removeAt(index)
+
+        observers.forEach {
+            it.elementRemoved(index)
         }
     }
 
@@ -63,11 +71,24 @@ class JSONObject: JSONStructure {
 
     fun addElement(key: String, value: JSONElement) {
         children[key] = value
+        observers.forEach {
+            it.elementAdded(value)
+        }
+    }
+
+    fun replaceElement(key: String, new: JSONElement) {
+        children[key] = new
+
+        observers.forEach {
+            it.elementReplaced(key, new)
+        }
     }
 
     fun containsKeys(keys: List<String>): Boolean = keys.all {children.containsKey(it)}
 
     fun hasStructure(keys: List<String>): Boolean = keys.size == children.keys.size && containsKeys(keys)
+
+    fun getChildren() = children
 }
 
 
