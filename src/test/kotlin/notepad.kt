@@ -1,5 +1,13 @@
+import mvc.JSONSourceParser
+import java.awt.Dimension
+import java.awt.GridLayout
+import javax.swing.JFrame
+import javax.swing.JPanel
+import javax.swing.JScrollPane
+
 val mainObject = JSONObject()
 val array = JSONArray()
+val courses = JSONArray()
 val arrayObject1 = JSONObject()
 val arrayObject2 = JSONObject()
 val arrayObject3 = JSONObject()
@@ -40,15 +48,32 @@ fun main() {
     array.addElement(arrayObject2)
     array.addElement(arrayObject3)
 
+    courses.addElement(JSONString("MEI"))
+    courses.addElement(JSONString("MIG"))
+    courses.addElement(JSONString("METI"))
+
     mainObject.addElement("uc", JSONString("PA"))
     mainObject.addElement("ects", JSONDouble(6.0))
     mainObject.addElement("data-exame", JSONNull)
     mainObject.addElement("inscritos", array)
+    mainObject.addElement("cursos", courses)
 
-    val s = Student(7, "Cristiano", StudentType.Doctoral)
-    val t = Turma("5ºH", s)
-    val cu = JSONGenerator().generate(listOf(t, "ola", 2, "adeus", 3.0, null, false, StudentType.Bachelor,
-        listOf("ola", 2, "adeus", 3.0, null, false), mapOf(1 to "x", 2 to 3.0, -1 to true, 3 to mapOf(1 to "x", 2 to 3.0, -1 to true))
-    ))
-    println(cu)
+    val parser = JSONSourceParser()
+    val panel = parser.parse(jsonSource = mainObject)
+    val frame = JFrame().apply {
+        defaultCloseOperation = JFrame.EXIT_ON_CLOSE
+        layout = GridLayout(0, 2)
+        size = Dimension(700, 700)
+
+        val left = JPanel()
+        left.layout = GridLayout()
+        val scrollPane = JScrollPane(panel.jPanel).apply {
+            horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS
+            verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS
+        }
+        left.add(scrollPane)
+        add(left)
+
+        isVisible = true
+    }
 }

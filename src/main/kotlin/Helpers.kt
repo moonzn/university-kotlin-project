@@ -6,20 +6,10 @@ import javax.swing.*
 
 
 fun main() {
-    var pai = JSONArray()
-
-    pai.addObserver(object : JSONArrayObserver {
-        override fun elementAdded(value: JSONElement) {
-            println(">:(")
-        }
-    })
-    Editor(pai).open()
+    Editor().open()
 }
 
-class Editor(val jsonSource: JSONArray) {
-
-    val srcArea = JTextArea()
-
+class Editor {
     val frame = JFrame("Josue - JSON Object Editor").apply {
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         layout = GridLayout(0, 2)
@@ -36,7 +26,7 @@ class Editor(val jsonSource: JSONArray) {
 
         val right = JPanel()
         right.layout = GridLayout()
-        //val srcArea = JTextArea()
+        val srcArea = JTextArea()
         srcArea.tabSize = 2
         srcArea.text = "TODO"
         right.add(srcArea)
@@ -53,33 +43,24 @@ class Editor(val jsonSource: JSONArray) {
             alignmentX = Component.LEFT_ALIGNMENT
             alignmentY = Component.TOP_ALIGNMENT
 
-            border = BorderFactory.createEmptyBorder(0, 10, 0, 10)
+            add(testWidget("A", "um"))
+            add(testWidget("B", "dois"))
+            add(testWidget("C", "tres"))
 
             // menu
             addMouseListener(object : MouseAdapter() {
                 override fun mouseClicked(e: MouseEvent) {
                     if (SwingUtilities.isRightMouseButton(e)) {
                         val menu = JPopupMenu("Message")
-
-                        /* ---------------- ADD ----------------  */
-
                         val add = JButton("add")
-
                         add.addActionListener {
-                            add(testWidget("N/A"))
-                            val jsonElement = JSONNull
-                            jsonSource.addElement(jsonElement)
-                            srcArea.text = jsonSource.toString()
+                            val text = JOptionPane.showInputDialog("text")
+                            add(testWidget(text, "?"))
                             menu.isVisible = false
                             revalidate()
                             frame.repaint()
                         }
-
-
-                        /* ---------------- DELETE ----------------  */
-
                         val del = JButton("delete all")
-
                         del.addActionListener {
                             components.forEach {
                                 remove(it)
@@ -97,39 +78,19 @@ class Editor(val jsonSource: JSONArray) {
         }
 
 
-    fun testWidget(value: String): JPanel =
+    fun testWidget(key: String, value: String): JPanel =
         JPanel().apply {
             layout = BoxLayout(this, BoxLayout.X_AXIS)
             alignmentX = Component.LEFT_ALIGNMENT
             alignmentY = Component.TOP_ALIGNMENT
 
-            val label = JLabel()
-            label.text = "N/A"
-            label.addMouseListener(object : MouseAdapter() {
-                override fun mouseClicked(e: MouseEvent) {
-                    val textField = JTextField("");
-                    textField.addFocusListener(object : FocusAdapter() {
-
-
-
-                        override fun focusLost(e: FocusEvent) {
-                            jsonSource.addElement(JSONGenerator().generate(textField.text))
-                            srcArea.text = jsonSource.toString()
-                        }
-                    })
-                    remove(label)
-                    add(textField)
-                    revalidate()
-                    repaint()
+            add(JLabel(key))
+            val text = JTextField(value)
+            text.addFocusListener(object : FocusAdapter() {
+                override fun focusLost(e: FocusEvent) {
+                    println("perdeu foco: ${text.text}")
                 }
             })
-
-            add(label)
+            add(text)
         }
 }
-
-
-
-
-
-

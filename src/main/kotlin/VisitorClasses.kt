@@ -1,7 +1,7 @@
 import kotlin.properties.Delegates
 import kotlin.reflect.KClass
 
-class GetJSONElementsVisitor(val key: String) : Visitor {
+class GetJSONElementsVisitor(val key: String): Visitor {
     private val jsonElements = mutableListOf<JSONElement>()
 
     fun getJSONElements(): MutableList<JSONElement> = jsonElements
@@ -14,7 +14,7 @@ class GetJSONElementsVisitor(val key: String) : Visitor {
     }
 }
 
-class GetJSONObjectsVisitor(val containsKeys: List<String>) : Visitor {
+class GetJSONObjectsVisitor(val containsKeys: List<String>): Visitor {
     private val jsonObjects = mutableListOf<JSONObject>()
 
     fun getJSONObjects(): MutableList<JSONObject> = jsonObjects
@@ -52,7 +52,6 @@ class VerifyJSONObjectsStructureVisitor(val key: String, val structure: List<Str
     fun integrity(): Boolean = integrity
 
     fun offenders(): MutableList<JSONElement> = offenders
-
 
     override fun visit(c: Map.Entry<String, JSONElement>): Boolean {
         if (c.key == key && c.value is JSONArray){

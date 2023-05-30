@@ -91,7 +91,21 @@ class JSONObject: JSONStructure {
     fun getChildren() = children
 }
 
+data class JSONObjectEntry(val entry: Map.Entry<String, JSONElement>): JSONElement {
 
+    private val JSONObjectEntry.key: String
+        get() = entry.key
+
+    private val JSONObjectEntry.value: JSONElement
+        get() = entry.value
+
+    override fun toString(): String {
+        return ("$key: $value")
+    }
+
+    override fun accept(visitor: Visitor) {
+    }
+}
 
 fun Map.Entry<String, JSONElement>.accept(visitor: Visitor) {
     if (visitor.visit(this)) {

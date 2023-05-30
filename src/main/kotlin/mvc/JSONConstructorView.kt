@@ -19,7 +19,7 @@ import javax.swing.*
 
 class JSONElementPanel(private val frame: JFrame, private var jsonElement: JSONElement, private val jsonElementParent: JSONStructure) {
 
-    private val thisPanel = JPanel()
+    private var thisPanel = JPanel()
     private var index = 0
 
     init {
@@ -100,7 +100,7 @@ class JSONElementPanel(private val frame: JFrame, private var jsonElement: JSONE
 
     private fun setPanelSettings(){
         thisPanel.layout = BoxLayout(thisPanel, BoxLayout.Y_AXIS)
-        thisPanel.alignmentX = Component.RIGHT_ALIGNMENT
+        thisPanel.alignmentX = Component.LEFT_ALIGNMENT
         thisPanel.alignmentY = Component.BOTTOM_ALIGNMENT
     }
 
@@ -115,8 +115,8 @@ class JSONElementPanel(private val frame: JFrame, private var jsonElement: JSONE
 
             override fun elementReplaced(index: Int, new: JSONElement) {
                 jsonElement = new
+                println("here")
             }
-
         })
 
         (jsonElement as? JSONObject)?.addObserver(object: JSONObjectObserver {
