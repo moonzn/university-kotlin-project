@@ -63,7 +63,7 @@ fun main() {
     val frame = JFrame().apply {
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         layout = GridLayout(0, 2)
-        size = Dimension(700, 700)
+        size = Dimension(1000, 700)
 
         val left = JPanel()
         left.layout = GridLayout()
