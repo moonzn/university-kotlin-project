@@ -57,7 +57,7 @@ class JSONObject: JSONStructure {
     fun removeObserver(observer: JSONObjectObserver) = observers.remove(observer)
 
     override fun toString(): String {
-        return children.map { "\"${it.key}\": ${it.value}" }.joinToString(prefix = "{", postfix = "}", separator = ", ")
+        return children.map { "\"${it.key}\": ${it.value}" }.joinToString(prefix = "{\n", postfix = "}\n", separator = ",\n ")
     }
 
     override fun accept(visitor: Visitor) {

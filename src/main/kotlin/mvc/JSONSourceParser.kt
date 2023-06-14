@@ -1,20 +1,23 @@
 package mvc
 
 import JSONArray
+import JSONArrayObserver
 import JSONElement
 import JSONObject
 import JSONObjectEntry
+import JSONObjectObserver
+import JSONString
 import JSONValue
 import java.awt.Color
 import java.awt.Component
 import java.awt.GridLayout
-import javax.swing.BorderFactory
-import javax.swing.BoxLayout
-import javax.swing.JLabel
-import javax.swing.JPanel
-import javax.swing.JTextField
+import java.awt.event.FocusAdapter
+import java.awt.event.FocusEvent
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
+import javax.swing.*
 
-class JSONSourceParser {
+class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: JSONElement) {
 
     private val rootPanel = JSONPanel(JPanel().apply {
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
@@ -23,26 +26,82 @@ class JSONSourceParser {
         border = BorderFactory.createEmptyBorder(7, 7, 7, 7)
     })
 
+    private fun showMenu(): MouseAdapter {
+        return object : MouseAdapter() {
+            override fun mouseClicked(e: MouseEvent?) {
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    if (e != null) {
+                        println("samsung")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun addObservers(jsonElement: JSONElement){
+        (jsonElement as? JSONArray)?.addObserver(object: JSONArrayObserver {
+            override fun elementAdded(value: JSONElement) {
+                //TODO
+            }
+
+            override fun elementRemoved(index: Int) {
+                //TODO
+            }
+
+            override fun elementReplaced(index: Int, new: JSONElement) {
+                srcArea.text = jsonSource.toString()
+            }
+
+        })
+
+        (jsonElement as? JSONObject)?.addObserver(object: JSONObjectObserver {
+            override fun elementAdded(value: JSONElement) {
+                //TODO
+                // If new element is key-value, add it to the existent obj
+                // If new element is just a value, convert the parent to a JSONArray
+            }
+
+            override fun elementRemoved(key: String) {
+                //TODO
+            }
+
+            override fun elementReplaced(key: String, new: JSONElement) {
+                srcArea.text = jsonSource.toString()
+            }
+
+        })
+    }
+
     fun parse(parent: JSONPanel = rootPanel, jsonSource: JSONElement): JSONPanel {
 
         if (jsonSource is JSONValue) {
             parent.jPanel.apply {
                 add(JTextField().apply {
                     text = jsonSource.toString()
+                    val arrayTextfield = this
+                    addFocusListener(object : FocusAdapter() {
+                        override fun focusLost(e: FocusEvent) {
+                            (parent.jsonParent as JSONArray).replaceElement(parent.jPanel.components.indexOf(e.source), JSONString(arrayTextfield.text))
+                        }
+                    })
                 })
             }
         }
 
         if (jsonSource is JSONArray) {
 
+            addObservers(jsonSource)
+
             val newParent = JSONPanel(JPanel().apply {
                 layout = BoxLayout(this, BoxLayout.Y_AXIS)
-                border = BorderFactory.createLineBorder(Color.darkGray, 6)
-            }, parent)
+                border = BorderFactory.createLineBorder(Color.darkGray, 10)
+            }, parent, jsonSource)
+
+            newParent.jPanel.addMouseListener(showMenu())
 
             jsonSource.getChildren().forEach() {
                 newParent.apply {
-                    parse(newParent, it)
+                    newParent.children.add(parse(newParent, it))
                 }
 
                 parent.jPanel.apply {
@@ -53,14 +112,18 @@ class JSONSourceParser {
 
         if (jsonSource is JSONObject) {
 
+            addObservers(jsonSource)
+
             val newParent = JSONPanel(JPanel().apply {
                 layout = BoxLayout(this, BoxLayout.Y_AXIS)
-                border = BorderFactory.createLineBorder(Color.LIGHT_GRAY, 6)
-            }, parent)
+                border = BorderFactory.createLineBorder(Color.LIGHT_GRAY, 10)
+            }, parent, jsonSource)
+
+            newParent.jPanel.addMouseListener(showMenu())
 
             jsonSource.getChildren().forEach() {
                 newParent.apply {
-                    parse(newParent, JSONObjectEntry(it))
+                    newParent.children.add(parse(newParent, JSONObjectEntry(it)))
                 }
 
                 parent.jPanel.apply {
@@ -78,7 +141,14 @@ class JSONSourceParser {
 
                         add(JLabel(jsonSource.entry.key))
 
-                        add(JTextField(jsonSource.entry.value.toString()))
+                        add(JTextField(jsonSource.entry.value.toString()).apply {
+                            val objectTextfield = this
+                            addFocusListener(object : FocusAdapter() {
+                                override fun focusLost(e: FocusEvent) {
+                                    (parent.jsonParent as JSONObject).replaceElement(jsonSource.entry.key, JSONString(objectTextfield.text))
+                                }
+                            })
+                        })
                     })
                 }
 
@@ -102,14 +172,14 @@ class JSONSourceParser {
                 }
             }
         }
-
         return rootPanel
     }
 }
 
 data class JSONPanel(
-    private val panel: JPanel,
-    private val parent: JSONPanel? = null,
+    val panel: JPanel,
+    val parent: JSONPanel? = null,
+    val jsonParent: JSONElement? = null,
     internal val children: MutableList<JSONPanel> = mutableListOf())
 {
     val jPanel: JPanel

@@ -1,3 +1,4 @@
+import mvc.JSONEditor
 import mvc.JSONSourceParser
 import java.awt.Dimension
 import java.awt.GridLayout
@@ -58,22 +59,6 @@ fun main() {
     mainObject.addElement("inscritos", array)
     mainObject.addElement("cursos", courses)
 
-    val parser = JSONSourceParser()
-    val panel = parser.parse(jsonSource = mainObject)
-    val frame = JFrame().apply {
-        defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-        layout = GridLayout(0, 2)
-        size = Dimension(1000, 700)
+    JSONEditor(mainObject)
 
-        val left = JPanel()
-        left.layout = GridLayout()
-        val scrollPane = JScrollPane(panel.jPanel).apply {
-            horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS
-            verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS
-        }
-        left.add(scrollPane)
-        add(left)
-
-        isVisible = true
     }
-}
