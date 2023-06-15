@@ -17,7 +17,7 @@ import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.*
 
-class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: JSONElement) {
+class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: JSONElement, private var leftPanel: JPanel, private val frame: JFrame) {
 
     private val panelMatches: MutableMap<JComponent, JSONPanel> = mutableMapOf()
 
@@ -40,23 +40,23 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
                     }
 
                     val del = JMenu("Delete")
+                    var index = 0
+
                     (e?.component as JPanel).components.forEach {
-                        if (it is JPanel) {
-                            val menuItem = JMenuItem(it.name)
-                            menuItem.addActionListener {
-                                println(panelMatches[e.component]?.jsonParent)
-                                //(panelMatches[e.component]?.jsonParent as JSONObject).deleteElement(menuItem.text)
-                                //println(panelMatches[e.component]?.jsonParent)
-                            }
-                            del.add(menuItem)
-                        } else {
-                            val menuItem = JMenuItem(it.name)
-                            menuItem.addActionListener {
-                                println(panelMatches[e.component]?.jsonParent)
-                                //(panelMatches[e.component]?.jsonParent as JSONArray).deleteElement(del.components.indexOf(menuItem))
-                            }
-                            del.add(menuItem)
+                        val menuItem = JMenuItem(it.name)
+                        val teste = index
+
+                        menuItem.addActionListener {
+                            val parent = panelMatches[e.component]?.jsonParent
+
+                            if (parent is JSONObject)
+                                parent.deleteElement(menuItem.text)
+                            else
+                                (parent as JSONArray).deleteElement(teste)
+
                         }
+                        del.add(menuItem)
+                        index += 1
                     }
                     menu.add(add)
                     menu.add(del)
@@ -73,7 +73,17 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
             }
 
             override fun elementRemoved(index: Int) {
-                //TODO
+                leftPanel.removeAll()
+                val parsedPanel = parse(jsonSource = jsonSource).jPanel
+                val scrollPane = JScrollPane(parsedPanel).apply {
+                    horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS
+                    verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS
+                }
+                leftPanel.add(scrollPane)
+                leftPanel.revalidate()
+                leftPanel.repaint()
+                frame.repaint()
+                srcArea.text = jsonSource.toString()
             }
 
             override fun elementReplaced(index: Int, new: JSONElement) {
@@ -90,7 +100,7 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
             }
 
             override fun elementRemoved(key: String) {
-                //TODO
+                srcArea.text = jsonSource.toString()
             }
 
             override fun elementReplaced(key: String, new: JSONElement) {
@@ -108,7 +118,7 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
                     text = jsonSource.toString()
                     val arrayTextfield = this
                     addFocusListener(object : FocusAdapter() {
-                        override fun focusLost(e: FocusEvent) {
+                        override fun focusLost(e: FocusEvent) {  // Modify element
                             (parent.jsonParent as JSONArray).replaceElement(parent.jPanel.components.indexOf(e.source), JSONString(arrayTextfield.text))
                         }
                     })

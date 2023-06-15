@@ -1,10 +1,5 @@
 package mvc
 
-import JSONArray
-import JSONArrayObserver
-import JSONElement
-import JSONObject
-import JSONObjectObserver
 import JSONStructure
 import java.awt.Dimension
 import java.awt.GridLayout
@@ -28,8 +23,8 @@ class JSONEditor(private val jsonSource: JSONStructure) {
             //Initialize left panel
             val leftPanel = JPanel()
             leftPanel.layout = GridLayout()
-            val initialParsedPanel = JSONSourceParser(srcArea, jsonSource).parse(jsonSource = jsonSource).jPanel
-            val scrollPane = JScrollPane(initialParsedPanel).apply {
+            val parsedPanel = JSONSourceParser(srcArea, jsonSource, leftPanel, frame).parse(jsonSource = jsonSource).jPanel
+            val scrollPane = JScrollPane(parsedPanel).apply {
                 horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS
                 verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS
             }
@@ -50,8 +45,6 @@ class JSONEditor(private val jsonSource: JSONStructure) {
             //Show Editor
             isVisible = true
         }
+
     }
-
-
-
 }
