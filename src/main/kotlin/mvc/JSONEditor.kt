@@ -40,6 +40,7 @@ class JSONEditor(private val jsonSource: JSONStructure) {
             rightPanel.layout = GridLayout()
             srcArea.tabSize = 2
             srcArea.text = jsonSource.toString()
+            srcArea.isEditable = false
             rightPanel.add(srcArea)
 
             //Add panels

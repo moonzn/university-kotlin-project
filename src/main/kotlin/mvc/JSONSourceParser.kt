@@ -19,6 +19,8 @@ import javax.swing.*
 
 class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: JSONElement) {
 
+    private val panelMatches: MutableMap<JComponent, JSONPanel> = mutableMapOf()
+
     private val rootPanel = JSONPanel(JPanel().apply {
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
         alignmentX = Component.LEFT_ALIGNMENT
@@ -30,9 +32,35 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
         return object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent?) {
                 if (SwingUtilities.isRightMouseButton(e)) {
-                    if (e != null) {
-                        println("samsung")
+                    val menu = JPopupMenu("Message")
+
+                    val add = JButton("Add")
+                    add.addActionListener {
+
                     }
+
+                    val del = JMenu("Delete")
+                    (e?.component as JPanel).components.forEach {
+                        if (it is JPanel) {
+                            val menuItem = JMenuItem(it.name)
+                            menuItem.addActionListener {
+                                println(panelMatches[e.component]?.jsonParent)
+                                //(panelMatches[e.component]?.jsonParent as JSONObject).deleteElement(menuItem.text)
+                                //println(panelMatches[e.component]?.jsonParent)
+                            }
+                            del.add(menuItem)
+                        } else {
+                            val menuItem = JMenuItem(it.name)
+                            menuItem.addActionListener {
+                                println(panelMatches[e.component]?.jsonParent)
+                                //(panelMatches[e.component]?.jsonParent as JSONArray).deleteElement(del.components.indexOf(menuItem))
+                            }
+                            del.add(menuItem)
+                        }
+                    }
+                    menu.add(add)
+                    menu.add(del)
+                    menu.show(e.component, e.x, e.y);
                 }
             }
         }
@@ -84,7 +112,7 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
                             (parent.jsonParent as JSONArray).replaceElement(parent.jPanel.components.indexOf(e.source), JSONString(arrayTextfield.text))
                         }
                     })
-                })
+                }).name = jsonSource.toString()
             }
         }
 
@@ -96,6 +124,8 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
                 layout = BoxLayout(this, BoxLayout.Y_AXIS)
                 border = BorderFactory.createLineBorder(Color.darkGray, 10)
             }, parent, jsonSource)
+
+            panelMatches[newParent.jPanel] = newParent
 
             newParent.jPanel.addMouseListener(showMenu())
 
@@ -119,6 +149,8 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
                 border = BorderFactory.createLineBorder(Color.LIGHT_GRAY, 10)
             }, parent, jsonSource)
 
+            panelMatches[newParent.jPanel] = newParent
+
             newParent.jPanel.addMouseListener(showMenu())
 
             jsonSource.getChildren().forEach() {
@@ -127,7 +159,7 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
                 }
 
                 parent.jPanel.apply {
-                    add(newParent.jPanel)
+                    add(newParent.jPanel).name = "JSONObject"
                 }
             }
         }
@@ -149,7 +181,7 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
                                 }
                             })
                         })
-                    })
+                    }).name = jsonSource.entry.key
                 }
 
             } else {
@@ -168,7 +200,7 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
 
                         parse(newParent, jsonSource.entry.value)
                         add(newParent.jPanel)
-                    })
+                    }).name = jsonSource.entry.key
                 }
             }
         }

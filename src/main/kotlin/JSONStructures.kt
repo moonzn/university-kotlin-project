@@ -36,7 +36,7 @@ class JSONArray: JSONStructure {
         }
     }
 
-    fun elementRemoved(index: Int) {
+    fun deleteElement(index: Int) {
         children.removeAt(index)
 
         observers.forEach {
@@ -49,7 +49,7 @@ class JSONArray: JSONStructure {
 
 class JSONObject: JSONStructure {
 
-    private val children : MutableMap<String,JSONElement> = mutableMapOf()
+    private val children: MutableMap<String,JSONElement> = mutableMapOf()
     private val observers: MutableList<JSONObjectObserver> = mutableListOf()
 
     fun addObserver(observer: JSONObjectObserver) = observers.add(observer)
@@ -81,6 +81,14 @@ class JSONObject: JSONStructure {
 
         observers.forEach {
             it.elementReplaced(key, new)
+        }
+    }
+
+    fun deleteElement(key: String) {
+        children.remove(key)
+
+        observers.forEach {
+            it.elementRemoved(key)
         }
     }
 
