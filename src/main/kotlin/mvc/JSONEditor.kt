@@ -23,7 +23,7 @@ class JSONEditor(private val jsonSource: JSONStructure) {
             //Initialize left panel
             val leftPanel = JPanel()
             leftPanel.layout = GridLayout()
-            val parsedPanel = JSONSourceParser(srcArea, jsonSource, leftPanel, frame).parse(jsonSource = jsonSource).jPanel
+            val parsedPanel = JSONSourceParser(srcArea, jsonSource).parse(jsonSource = jsonSource).jPanel
             val scrollPane = JScrollPane(parsedPanel).apply {
                 horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS
                 verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS

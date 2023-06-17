@@ -17,7 +17,7 @@ import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.*
 
-class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: JSONElement, private var leftPanel: JPanel, private val frame: JFrame) {
+class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: JSONElement) {
 
     private val panelMatches: MutableMap<JComponent, JSONPanel> = mutableMapOf()
 
@@ -54,6 +54,17 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
                             else
                                 (parent as JSONArray).deleteElement(teste)
 
+                            rootPanel.jPanel.removeAll()
+
+                            /*
+                            * Se esta funçao estiver dentro do deleteElement, dá esta exceção:
+                            * Exception in thread "AWT-EventQueue-0" java.util.ConcurrentModificationException
+                            *
+                            * se ficasse lá, a UI continuava a funcionar normalmente, mas dá essa exceçao
+                            * se estiver aqui, a UI tb funciona normalmente, mas ja nao da essa exceçao
+                            *
+                            * */
+                            reparse()
                         }
                         del.add(menuItem)
                         index += 1
@@ -73,16 +84,6 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
             }
 
             override fun elementRemoved(index: Int) {
-                leftPanel.removeAll()
-                val parsedPanel = parse(jsonSource = jsonSource).jPanel
-                val scrollPane = JScrollPane(parsedPanel).apply {
-                    horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS
-                    verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS
-                }
-                leftPanel.add(scrollPane)
-                leftPanel.revalidate()
-                leftPanel.repaint()
-                frame.repaint()
                 srcArea.text = jsonSource.toString()
             }
 
@@ -110,7 +111,13 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
         })
     }
 
-    fun parse(parent: JSONPanel = rootPanel, jsonSource: JSONElement): JSONPanel {
+    fun reparse() {
+        parse(jsonSource = jsonSource, firstRun = false)
+        rootPanel.jPanel.revalidate()
+        rootPanel.jPanel.repaint()
+    }
+
+    fun parse(parent: JSONPanel = rootPanel, jsonSource: JSONElement, firstRun: Boolean = true): JSONPanel {
 
         if (jsonSource is JSONValue) {
             parent.jPanel.apply {
@@ -128,7 +135,8 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
 
         if (jsonSource is JSONArray) {
 
-            addObservers(jsonSource)
+            if (firstRun)
+                addObservers(jsonSource)
 
             val newParent = JSONPanel(JPanel().apply {
                 layout = BoxLayout(this, BoxLayout.Y_AXIS)
@@ -152,7 +160,8 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
 
         if (jsonSource is JSONObject) {
 
-            addObservers(jsonSource)
+            if (firstRun)
+                addObservers(jsonSource)
 
             val newParent = JSONPanel(JPanel().apply {
                 layout = BoxLayout(this, BoxLayout.Y_AXIS)
