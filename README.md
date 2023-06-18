@@ -69,7 +69,7 @@ false
 ```
 
 
-It is great being to instantiate a bunch of JSON variables, but how do we couple them together into an actual JSON hierarchy?
+It is great being able to instantiate a bunch of JSON variables, but how do we couple them together into an actual JSON hierarchy?
 We can do that through... ```JSONObject```s and ```JSONArray```s! Let's take a look.
 
 
