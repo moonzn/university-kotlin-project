@@ -205,7 +205,7 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
 
             newParent.jPanel.addMouseListener(showMenu())
 
-            jsonSource.getChildren().forEach() {
+            jsonSource.getChildren().forEach {
                 newParent.apply {
                     newParent.children.add(parse(newParent, it))
                 }
@@ -230,7 +230,7 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
 
             newParent.jPanel.addMouseListener(showMenu())
 
-            jsonSource.getChildren().forEach() {
+            jsonSource.getChildren().forEach {
                 newParent.apply {
                     newParent.children.add(parse(newParent, JSONObjectEntry(it)))
                 }
