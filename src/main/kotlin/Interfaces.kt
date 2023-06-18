@@ -4,6 +4,7 @@ interface JSONElement {
 }
 
 interface JSONValue: JSONElement {
+    fun getValue(): String
     override fun accept(visitor: Visitor) {
         visitor.visit(this)
     }
