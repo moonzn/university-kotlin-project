@@ -1,14 +1,25 @@
 # JSON Editor
 
-university-kotlin-project is a Kotlin library for dealing with JSON. Your JSON models are represented through a set of **JSON elements**
+university-kotlin-project is a Kotlin library that handles the creation and manipulation of models that specifically represent JSON. Using these models, we define that a JSON hierarchy is represented through a group of **JSON elements**, where...
+
+| JSONElement  | Representation of  |
+|---|---|
+| JSONString  |  String / Enum instance |
+| JSONInt  | Integer |
+| JSONDouble | Double |
+| JSONBool | Boolean |
+| JSONNull | null |
+| JSONArray | Collection |
+| JSONObject | Data class / Map |
+
 With this package you will be able to:
-- Create your own JSON hierarchies through JSON elements
-- Manipulate your JSON elements
+- Create your own JSON hierarchies
+- Manipulate JSON elements
 - Make basic JSON searches
 - Convert collections, data classes, primitive types into JSON elements
+- Output and visualize your hierarchies in String format
 
 ## Dependencies
-
 ```kotlin
 dependencies {
     implementation 'org.example:university-kotlin-project:1.0-SNAPSHOT'
@@ -18,7 +29,6 @@ dependencies {
 ## Usage
 
 ### Create your own JSON elements
-<br>
 Let's first create your first "Hello World" program using the university-kotlin-project package!
 You can create a JSON string introducing yourself to the world... and print it!
 
@@ -34,9 +44,7 @@ Output:
 Hello World! I am a JSON String!
 ```
 
-<br>
-
-JSON strings are not the only type you can create. You may create JSON elements for **integers**, **doubles**, **null** values and **booleans** as well:
+JSON strings are not the only type you can create. You may create ```JSONElement```s for **integers**, **doubles**, **null** values and **booleans** as well:
 
 ```kotlin
 fun main() {
@@ -60,18 +68,13 @@ null
 false
 ```
 
-<br>
 
 It is great being to instantiate a bunch of JSON variables, but how do we couple them together into an actual JSON hierarchy?
-We can do that through... JSON Objects and JSON Arrays! Let's take a look.
+We can do that through... ```JSONObject```s and ```JSONArray```s! Let's take a look.
 
-<br>
 
 #### Create an object
-
-<br>
-
-Create a profile for Mr. White, through a JSON Object:
+Create a profile for Mr. White, through a ```JSONObject```:
 
 ```kotlin
 fun main() {
@@ -104,12 +107,8 @@ Output:
 }
 ```
 
-<br>
-
 #### Create an array
-
-<br>
-We may also create a list of any JSON elements we want, for example, a list of jobs:
+We may also create a list of any ```JSONElement```s we want, for example, a list of jobs:
 
 ```kotlin
 fun main() {
@@ -135,7 +134,7 @@ Output:
 
 ### Replace JSON elements
 
-We may manipulate any element of an existent JSONObject or JSONArray, through the *replaceElement* function, providing the key and the index of the element we want to change, respectively.
+We may manipulate any element of an existent ```JSONObject``` or ```JSONArray```, through the ```replaceElement``` function, providing the key and the index of the element we want to change, respectively.
 
 ```kotlin
 fun main() {
@@ -186,10 +185,7 @@ After:
 ```
 
 ### Delete JSON elements
-
-<br>
-
-Everything described in the modification of JSON elements applies to the *deleteElement* function.
+Everything described in the modification of ```JSONElement```s applies to the ```deleteElement()``` function.
 
 
 ```kotlin
@@ -239,13 +235,14 @@ After:
 ```
 
 
-### Basic searches
+### Searches and validations
 
-Searches are made through *Visitor* classes.
 
 #### Search for elements with key X
 
-If you want to search for every element with the "Alias" tag, you may accomplish that with the *GetJSONElementsVisitor* class:
+To get all ```JSONElement```s associated with a tag *key*, use the ```GetJSONElementsVisitor(key)``` class.
+
+To start the search, just call the ```accept()``` function. In the end there will be a list will all the matches.
 
 ```kotlin
 fun main() {
@@ -272,8 +269,9 @@ Output:
 ```
 
 #### Get every object that contains tags X, Y...
-<br>
-The *GetJSONObjectsVisitor* class will search for every JSONObject that contains all the specified tags, in this example, only the "Alias" tag:
+The ```GetJSONObjectsVisitor(containsKeys)``` class will search for every ```JSONObject``` that contains all the tags specified in the *containsKeys* argument.
+
+To start the search, just call the ```accept()``` function. In the end there will be a list will all the matches.
 
 ```kotlin
 fun main() {
@@ -312,7 +310,10 @@ Output:
 
 #### Check if a specified tag respects the desired type
 
-To check if all tags with name "Alias" are all JSONInt, use the *VerifyJSONElementTypeVisitor* class:
+To check a specific tag types, use the ```VerifyJSONElementTypeVisitor(key, clazz)``` class: it will search for every *key* and check its value class. The value class must be the same as the *clazz* argument provided.
+
+To start the verification, just call the ```accept()``` function. In the end it will provide a boolean value stating if the integrity is valid or not, and a list of offenders (list of ```JSONObject``` that did not follow the structure).
+
 ```kotlin
 fun main() {
     val mrWhite = JSONObject()
@@ -339,7 +340,10 @@ false
 [Alias=Heisenberg, Alias=Mr. White]
 ```
 
-#### Verify if an array objects have the same structure
+#### Verify if all the objects within an array have the same structure
+This is accomplished through the ```VerifyJSONObjectsStructureVisitor(key, structure)``` class: it will check if the given *structure* is respected in every ```JSONObject``` inside the ```JSONArray``` specified by the tag *key*.
+
+To start the verification, just call the ```accept()``` function. In the end it will provide a boolean value stating if the integrity is valid or not, and a list of offenders (list of ```JSONObject``` that did not follow the structure).
 
 ```kotlin
 fun main() {
@@ -381,11 +385,11 @@ false
 }]
 ```
 
-## Conversions to JSON elements
-
-Every conversion will be made through the *JSONGenerator().generate(initiator)* functions where the initiator argument corresponds to the data class/collection/map/type... etc that we want to convert.
+## Convert to JSON element
+Every conversion will be made through the ```JSONGenerator().generate(initiator)``` function where the initiator argument corresponds to the data class/collection/map/type... etc you want to convert.
 
 ### Data class to JSONElement
+Always converted to ```JSONObject```.
 
 ```kotlin
 fun main() {
@@ -399,6 +403,7 @@ fun main() {
 ```
 
 Output:
+
 ```console
 {
 	"number": 10,
@@ -407,6 +412,7 @@ Output:
 ```
 
 ### Collection to JSONElement
+Always converted to ```JSONArray```.
 
 ```kotlin
 fun main() {
@@ -436,7 +442,7 @@ Output:
 
 
 ### Map to JSONElement
-
+Always converted to ```JSONObject```.
 ```kotlin
 fun main() {
     val number = 10
@@ -475,6 +481,8 @@ class JSONNull
 
 
 ### Enumerator to JSONElement
+An enumerator instance will be always converted to ```JSONString```.
+
 ```kotlin
 enum class Subject {
     Chemistry, Science
@@ -493,9 +501,49 @@ Chemistry
 class JSONString
 ```
 
-### Monitor changes through Observers
+### Annotations
 
-#### JSONArray
+You may customize the JSON output of the data classes you will convert to JSON. 
+There are three available annotations:
+
+- ```@ForceString``` will force the attribute to be outputed as ```JSONString```
+- ```@Identifier(identifier)``` will use the identifier as the tag name
+- ```@Exclude``` excludes the attribute from the output
+
+
+```kotlin
+enum class Subject {
+    Chemistry, Science
+}
+
+fun main() {
+    data class Student(
+        @ForceString
+        val number: Int,
+        @Identifier("student name")
+        val name: String,
+        @Exclude
+        val subject: Subject
+    )
+    println(JSONGenerator().generate(initiator = Student(10, "Jesse Pinkman", Subject.Chemistry)))
+}
+```
+
+Output:
+```console
+{
+	"number": "10",
+	"student name": "Jesse Pinkman"
+}
+```
+
+
+## Monitor changes through Observers
+If you need to trigger a specific operation everytime a JSON element gets changed/replaced, you can do it through ```JSONArrayObserver``` and ```JSONObjectObserver``` observers. 
+
+**Note:** This is only viable to ```JSONArray``` and ```JSONObject``` as the changes will occur within those elements.
+
+### JSONArray
 ```kotlin
 fun main() {
     val subjects = JSONArray()
@@ -538,7 +586,7 @@ Final result:
 	]
 ```
 
-#### JSONObject
+### JSONObject
 ```kotlin
 fun main() {
     val mrWhite = JSONObject()
