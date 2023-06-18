@@ -53,6 +53,10 @@ class JSONArray: JSONStructure {
         }
     }
 
+    fun getIndex(element: JSONElement): Int {
+        return children.indexOf(element)
+    }
+
     fun getChildren() = children
 }
 

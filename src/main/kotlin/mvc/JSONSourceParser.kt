@@ -1,5 +1,6 @@
 package mvc
 
+import Command
 import JSONArray
 import JSONArrayObserver
 import JSONBool
@@ -24,6 +25,7 @@ import javax.swing.*
 class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: JSONElement) {
 
     private val panelMatches: MutableMap<JComponent, JSONPanel> = mutableMapOf()
+    private var commands: ArrayDeque<Command> = ArrayDeque()
 
     private val rootPanel = JSONPanel(JPanel().apply {
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
@@ -60,8 +62,18 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
                         index += 1
                     }
 
+                    val undo = JButton("Undo test")
+                    undo.addActionListener {
+                        menu.isVisible = false
+
+                        val command = commands.removeLast()
+                        command.undo()
+                    }
+
                     menu.add(add)
                     menu.add(del)
+                    if (commands.size != 0)
+                        menu.add(undo)
                     menu.show(e.component, e.x, e.y)
                 }
             }
@@ -89,7 +101,10 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
                 val jsonInput = getJSONElement(value.text)
                 addObservers(jsonInput)
 
-                addParent.addElement(key.text, jsonInput)
+                val addCommand = AddElementCommand()
+                addCommand.execute(addParent, key = key.text, jsonInput)
+                commands.addLast(addCommand)
+
                 reparse()
             }
 
@@ -107,7 +122,10 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
                 val jsonInput = getJSONElement(value.text)
                 addObservers(jsonInput)
 
-                addParent.addElement(jsonInput)
+                val addCommand = AddElementCommand()
+                addCommand.execute(addParent, key = null, jsonInput)
+                commands.addLast(addCommand)
+
                 reparse()
             }
         }

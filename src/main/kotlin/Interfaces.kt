@@ -34,3 +34,8 @@ interface Visitor {
     fun endVisit(c: JSONElement) {}
     fun endVisit(c: Map.Entry<String, JSONElement>) {}
 }
+
+interface Command {
+    fun execute(parent: JSONStructure, key: String?, element: JSONElement)
+    fun undo()
+}
