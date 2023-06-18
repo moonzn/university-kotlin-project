@@ -24,7 +24,7 @@ import javax.swing.*
 
 class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: JSONElement) {
 
-    private val panelMatches: MutableMap<JComponent, JSONPanel> = mutableMapOf()
+    private var panelMatches: MutableMap<JComponent, JSONPanel> = mutableMapOf()
     private var commands: ArrayDeque<Command> = ArrayDeque()
 
     private val rootPanel = JSONPanel(JPanel().apply {
@@ -184,7 +184,12 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
                     val arrayTextfield = this
                     addFocusListener(object : FocusAdapter() {
                         override fun focusLost(e: FocusEvent) {  // Modify element
-                            (parent.jsonParent as JSONArray).replaceElement(parent.jPanel.components.indexOf(e.source), getJSONElement(arrayTextfield.text))
+                            val index = parent.jPanel.components.indexOf(e.source)
+
+                            val prevText = (parent.jsonParent as JSONArray).getChildren()[index].toString()
+
+                            if (prevText != arrayTextfield.text)
+                                parent.jsonParent.replaceElement(parent.jPanel.components.indexOf(e.source), getJSONElement(arrayTextfield.text))
                         }
                     })
                 }).name = jsonSource.toString()
@@ -207,7 +212,7 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
 
             jsonSource.getChildren().forEach {
                 newParent.apply {
-                    newParent.children.add(parse(newParent, it))
+                    newParent.children.add(parse(newParent, it, firstRun))
                 }
 
                 parent.jPanel.apply {
@@ -232,7 +237,7 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
 
             jsonSource.getChildren().forEach {
                 newParent.apply {
-                    newParent.children.add(parse(newParent, JSONObjectEntry(it)))
+                    newParent.children.add(parse(newParent, JSONObjectEntry(it), firstRun))
                 }
 
                 parent.jPanel.apply {
@@ -254,7 +259,11 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
                             val objectTextfield = this
                             addFocusListener(object : FocusAdapter() {
                                 override fun focusLost(e: FocusEvent) {
-                                    (parent.jsonParent as JSONObject).replaceElement(jsonSource.entry.key, getJSONElement(objectTextfield.text))
+
+                                    val prevText = (parent.jsonParent as JSONObject).getChildren()[jsonSource.entry.key].toString()
+
+                                    if (prevText != objectTextfield.text)
+                                        parent.jsonParent.replaceElement(jsonSource.entry.key, getJSONElement(objectTextfield.text))
                                 }
                             })
                         })
@@ -275,7 +284,7 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
                             alignmentY = Component.TOP_ALIGNMENT
                         }, parent)
 
-                        parse(newParent, jsonSource.entry.value)
+                        parse(newParent, jsonSource.entry.value, firstRun)
                         add(newParent.jPanel)
                     }).name = jsonSource.entry.key
                 }
@@ -285,6 +294,7 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
     }
 
     private fun reparse() {
+        panelMatches = mutableMapOf()
         rootPanel.jPanel.removeAll()
         parse(jsonSource = jsonSource, firstRun = false)
         rootPanel.jPanel.revalidate()
