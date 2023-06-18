@@ -541,7 +541,7 @@ Output:
 ## Monitor changes through Observers
 If you need to trigger a specific operation everytime a JSON element gets changed/replaced, you can do it through ```JSONArrayObserver``` and ```JSONObjectObserver``` observers. 
 
-**Note:** This is only viable to ```JSONArray``` and ```JSONObject``` as the changes will occur within those elements.
+**Note:** This is only applies to ```JSONArray``` and ```JSONObject``` as the changes will occur within those elements.
 
 ### JSONArray
 ```kotlin
