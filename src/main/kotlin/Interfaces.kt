@@ -36,6 +36,6 @@ interface Visitor {
 }
 
 interface Command {
-    fun execute(parent: JSONStructure, key: String?, element: JSONElement)
+    fun execute()
     fun undo()
 }

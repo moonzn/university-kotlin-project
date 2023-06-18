@@ -62,7 +62,7 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
                         index += 1
                     }
 
-                    val undo = JButton("Undo test")
+                    val undo = JButton("Undo")
                     undo.addActionListener {
                         menu.isVisible = false
 
@@ -101,8 +101,8 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
                 val jsonInput = getJSONElement(value.text)
                 addObservers(jsonInput)
 
-                val addCommand = AddElementCommand()
-                addCommand.execute(addParent, key = key.text, jsonInput)
+                val addCommand = AddElementCommand(addParent, key = key.text, jsonInput)
+                addCommand.execute()
                 commands.addLast(addCommand)
 
                 reparse()
@@ -122,8 +122,8 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
                 val jsonInput = getJSONElement(value.text)
                 addObservers(jsonInput)
 
-                val addCommand = AddElementCommand()
-                addCommand.execute(addParent, key = null, jsonInput)
+                val addCommand = AddElementCommand(addParent, key = null, jsonInput)
+                addCommand.execute()
                 commands.addLast(addCommand)
 
                 reparse()
