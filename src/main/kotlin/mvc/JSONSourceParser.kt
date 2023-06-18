@@ -104,8 +104,6 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
                 val addCommand = AddElementCommand(addParent, key = key.text, jsonInput)
                 addCommand.execute()
                 commands.addLast(addCommand)
-
-                reparse()
             }
 
         } else if (addParent is JSONArray) {
@@ -125,53 +123,54 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
                 val addCommand = AddElementCommand(addParent, key = null, jsonInput)
                 addCommand.execute()
                 commands.addLast(addCommand)
-
-                reparse()
             }
         }
     }
 
     fun remove(delParent: JSONElement?, arrayIndex: Int, menuItem: JMenuItem) {
-        if (delParent is JSONObject)
-            delParent.deleteElement(menuItem.text)
-        else
-            (delParent as JSONArray).deleteElement(arrayIndex)
-
-        reparse()
-    }
-
-    fun replace() {
-        reparse()
+        if (delParent is JSONObject) {
+            val deleteCommand = DeleteElementCommand(delParent, menuItem.text, index = null)
+            deleteCommand.execute()
+            commands.addLast(deleteCommand)
+        } else if (delParent is JSONArray){
+            val deleteCommand = DeleteElementCommand(delParent, key = null, index = arrayIndex)
+            deleteCommand.execute()
+            commands.addLast(deleteCommand)
+        }
     }
 
     private fun addObservers(jsonElement: JSONElement){
         (jsonElement as? JSONArray)?.addObserver(object: JSONArrayObserver {
             override fun elementAdded(value: JSONElement) {
                 srcArea.text = jsonSource.toString()
+                reparse()
             }
 
             override fun elementRemoved(index: Int) {
                 srcArea.text = jsonSource.toString()
+                reparse()
             }
 
             override fun elementReplaced(index: Int, new: JSONElement) {
                 srcArea.text = jsonSource.toString()
-                replace()
+                reparse()
             }
         })
 
         (jsonElement as? JSONObject)?.addObserver(object: JSONObjectObserver {
             override fun elementAdded(value: JSONElement) {
                 srcArea.text = jsonSource.toString()
+                reparse()
             }
 
             override fun elementRemoved(key: String) {
                 srcArea.text = jsonSource.toString()
+                reparse()
             }
 
             override fun elementReplaced(key: String, new: JSONElement) {
                 srcArea.text = jsonSource.toString()
-                replace()
+                reparse()
             }
         })
     }

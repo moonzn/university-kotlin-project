@@ -37,13 +37,36 @@ class AddElementCommand(parent: JSONStructure, key: String?, element: JSONElemen
     }
 }
 
-class DeleteElementCommand(): Command {
+class DeleteElementCommand(parent: JSONStructure, key: String?, index: Int?): Command {
+
+    private var innerParent: JSONStructure = parent
+    private var innerKey: String? = key
+    private var innerIndex: Int? = index
+    private var innerElement: JSONElement? = null
 
     override fun execute() {
-        TODO("Not yet implemented")
+        if (innerParent is JSONObject) {
+            if (innerKey != null) {
+                innerElement = (innerParent as JSONObject).getChildren()[innerKey]
+                (innerParent as JSONObject).deleteElement(innerKey!!)
+            }
+        } else if (innerParent is JSONArray) {
+            if (innerIndex != null) {
+                innerElement = (innerParent as JSONArray).getChildren()[innerIndex!!]
+                (innerParent as JSONArray).deleteElement(innerIndex!!)
+            }
+        }
     }
 
     override fun undo() {
-        TODO("Not yet implemented")
+        if (innerParent is JSONObject) {
+            if (innerElement != null && innerKey != null) {
+                (innerParent as JSONObject).addElement(innerKey!!, innerElement!!)
+            }
+        } else if (innerParent is JSONArray) {
+            if (innerElement != null) {
+                (innerParent as JSONArray).addElement(innerElement!!)
+            }
+        }
     }
 }
