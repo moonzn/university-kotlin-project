@@ -71,7 +71,7 @@ class JSONObject: JSONStructure {
             prefix = "{\n$childIndent",
             postfix = "\n$indent}",
             separator = ",\n$childIndent",
-            transform = { "\"${it.key}\": ${it.value}" }
+            transform = { "\"${it.key}\": ${it.value.prettyPrint()}" }
         )
     }
 
