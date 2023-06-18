@@ -45,7 +45,7 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
                         menu.isVisible = false
 
                         val addParent = panelMatches[(e?.component as JPanel)]?.jsonParent
-                        add(addParent)
+                        addJSONElement(addParent)
                     }
 
                     var index = 0
@@ -56,8 +56,9 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
 
                         menuItem.addActionListener {
                             val delParent = panelMatches[e.component]?.jsonParent
-                            remove(delParent, arrayIndex, menuItem)
+                            removeJSONElement(delParent, arrayIndex, menuItem)
                         }
+
                         del.add(menuItem)
                         index += 1
                     }
@@ -80,7 +81,7 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
         }
     }
 
-    fun add(addParent: JSONElement?) {
+    private fun addJSONElement(addParent: JSONElement?) {
         val key = JTextField(10)
         val value = JTextField(10)
 
@@ -127,7 +128,7 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
         }
     }
 
-    fun remove(delParent: JSONElement?, arrayIndex: Int, menuItem: JMenuItem) {
+    fun removeJSONElement(delParent: JSONElement?, arrayIndex: Int, menuItem: JMenuItem) {
         if (delParent is JSONObject) {
             val deleteCommand = DeleteElementCommand(delParent, menuItem.text, index = null)
             deleteCommand.execute()
@@ -188,8 +189,11 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
 
                             val prevText = (parent.jsonParent as JSONArray).getChildren()[index].toString()
 
-                            if (prevText != arrayTextfield.text)
-                                parent.jsonParent.replaceElement(parent.jPanel.components.indexOf(e.source), getJSONElement(arrayTextfield.text))
+                            if (prevText != arrayTextfield.text) {
+                                val replaceCommand = ReplaceElementCommand(parent.jsonParent, key = null, index = index, getJSONElement(arrayTextfield.text))
+                                replaceCommand.execute()
+                                commands.addLast(replaceCommand)
+                            }
                         }
                     })
                 }).name = jsonSource.toString()
@@ -262,8 +266,11 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
 
                                     val prevText = (parent.jsonParent as JSONObject).getChildren()[jsonSource.entry.key].toString()
 
-                                    if (prevText != objectTextfield.text)
-                                        parent.jsonParent.replaceElement(jsonSource.entry.key, getJSONElement(objectTextfield.text))
+                                    if (prevText != objectTextfield.text) {
+                                        val replaceCommand = ReplaceElementCommand(parent.jsonParent, key = jsonSource.entry.key, index = null, getJSONElement(objectTextfield.text))
+                                        replaceCommand.execute()
+                                        commands.addLast(replaceCommand)
+                                    }
                                 }
                             })
                         })

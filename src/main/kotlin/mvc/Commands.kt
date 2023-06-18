@@ -70,3 +70,38 @@ class DeleteElementCommand(parent: JSONStructure, key: String?, index: Int?): Co
         }
     }
 }
+
+class ReplaceElementCommand(parent: JSONStructure, key: String?, index: Int?, element: JSONElement): Command {
+
+    private var innerParent: JSONStructure = parent
+    private var innerKey: String? = key
+    private var innerIndex: Int? = index
+    private var innerElement: JSONElement = element
+    private var previousElement: JSONElement? = null
+
+    override fun execute() {
+        if (innerParent is JSONObject) {
+            if (innerKey != null) {
+                previousElement = (innerParent as JSONObject).getChildren()[innerKey]
+                (innerParent as JSONObject).replaceElement(innerKey!!, innerElement)
+            }
+        } else if (innerParent is JSONArray) {
+            if (innerIndex != null) {
+                previousElement = (innerParent as JSONArray).getChildren()[innerIndex!!]
+                (innerParent as JSONArray).replaceElement(innerIndex!!, innerElement)
+            }
+        }
+    }
+
+    override fun undo() {
+        if (innerParent is JSONObject) {
+            if (innerKey != null && previousElement != null) {
+                (innerParent as JSONObject).replaceElement(innerKey!!, previousElement!!)
+            }
+        } else if (innerParent is JSONArray) {
+            if (innerIndex != null && previousElement != null) {
+                (innerParent as JSONArray).replaceElement(innerIndex!!, previousElement!!)
+            }
+        }
+    }
+}
