@@ -1,10 +1,4 @@
 import mvc.JSONEditor
-import mvc.JSONSourceParser
-import java.awt.Dimension
-import java.awt.GridLayout
-import javax.swing.JFrame
-import javax.swing.JPanel
-import javax.swing.JScrollPane
 
 val mainObject = JSONObject()
 val array = JSONArray()
@@ -20,12 +14,6 @@ data class Student(
     val name: String,
     @Exclude
     val type: StudentType? = null
-)
-
-data class Turma(
-    val designation: String,
-    @ForceString
-    val student: Student
 )
 
 enum class StudentType {
@@ -60,5 +48,4 @@ fun main() {
     mainObject.addElement("cursos", courses)
 
     JSONEditor(mainObject)
-
     }
