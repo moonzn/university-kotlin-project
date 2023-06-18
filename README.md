@@ -69,7 +69,7 @@ false
 ```
 
 
-It is great being to instantiate a bunch of JSON variables, but how do we couple them together into an actual JSON hierarchy?
+It is great being able to instantiate a bunch of JSON variables, but how do we couple them together into an actual JSON hierarchy?
 We can do that through... ```JSONObject```s and ```JSONArray```s! Let's take a look.
 
 
@@ -541,7 +541,7 @@ Output:
 ## Monitor changes through Observers
 If you need to trigger a specific operation everytime a JSON element gets changed/replaced, you can do it through ```JSONArrayObserver``` and ```JSONObjectObserver``` observers. 
 
-**Note:** This is only viable to ```JSONArray``` and ```JSONObject``` as the changes will occur within those elements.
+**Note:** This is only applies to ```JSONArray``` and ```JSONObject``` as the changes will occur within those elements.
 
 ### JSONArray
 ```kotlin
