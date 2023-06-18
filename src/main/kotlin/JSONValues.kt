@@ -3,11 +3,11 @@ data class JSONString(
 ): JSONValue {
 
     override fun toString(): String{
-        return "\"$value\""
+        return value
     }
 
-    override fun getValue(): String {
-        return value
+    override fun prettyPrint(indent: String): String {
+        return indent + "\"$value\""
     }
 }
 
@@ -16,11 +16,11 @@ data class JSONBool(
 ): JSONValue {
 
     override fun toString(): String {
-        return "$value"
+        return value.toString()
     }
 
-    override fun getValue(): String {
-        return value.toString()
+    override fun prettyPrint(indent: String): String {
+        return indent + "$value"
     }
 }
 
@@ -29,11 +29,11 @@ data class JSONInt(
 ): JSONValue {
 
     override fun toString(): String {
-        return "$value"
+        return value.toString()
     }
 
-    override fun getValue(): String {
-        return value.toString()
+    override fun prettyPrint(indent: String): String {
+        return indent + "$value"
     }
 }
 
@@ -42,11 +42,11 @@ data class JSONDouble(
 ): JSONValue {
 
     override fun toString(): String {
-        return "$value"
+        return value.toString()
     }
 
-    override fun getValue(): String {
-        return value.toString()
+    override fun prettyPrint(indent: String): String {
+        return indent + "$value"
     }
 }
 
@@ -57,7 +57,7 @@ object JSONNull: JSONValue {
         return "null"
     }
 
-    override fun getValue(): String {
-        return "null"
+    override fun prettyPrint(indent: String): String {
+        return indent + this.toString()
     }
 }

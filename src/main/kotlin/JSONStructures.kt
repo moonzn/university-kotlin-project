@@ -7,9 +7,18 @@ class JSONArray: JSONStructure {
 
     fun removeObserver(observer: JSONArrayObserver) = observers.remove(observer)
 
+    override fun prettyPrint(indent: String): String {
+        val childIndent = "$indent\t"
+        return children.joinToString(
+            prefix = "[\n$childIndent",
+            postfix = "\n$indent\t]",
+            separator = ",\n$childIndent",
+            transform = { it.prettyPrint(childIndent) }
+        )
+    }
 
     override fun toString(): String {
-        return children.joinToString(prefix = "[", postfix = "]", separator = ", ")
+        return this.prettyPrint()
     }
 
     override fun accept(visitor: Visitor) {
@@ -56,8 +65,18 @@ class JSONObject: JSONStructure {
 
     fun removeObserver(observer: JSONObjectObserver) = observers.remove(observer)
 
+    override fun prettyPrint(indent: String): String {
+        val childIndent = "$indent\t"
+        return children.entries.joinToString(
+            prefix = "{\n$childIndent",
+            postfix = "\n$indent}",
+            separator = ",\n$childIndent",
+            transform = { "\"${it.key}\": ${it.value}" }
+        )
+    }
+
     override fun toString(): String {
-        return children.map { "\"${it.key}\": ${it.value}" }.joinToString(prefix = "{\n", postfix = "}\n", separator = ",\n ")
+        return this.prettyPrint()
     }
 
     override fun accept(visitor: Visitor) {
@@ -109,6 +128,10 @@ data class JSONObjectEntry(val entry: Map.Entry<String, JSONElement>): JSONEleme
 
     override fun toString(): String {
         return ("$key: $value")
+    }
+
+    override fun prettyPrint(indent: String): String {
+        return this.toString()
     }
 
     override fun accept(visitor: Visitor) {

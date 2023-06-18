@@ -1,10 +1,12 @@
 interface JSONElement {
     override fun toString(): String
+
+    fun prettyPrint(indent: String = ""): String
+
     fun accept(visitor: Visitor)
 }
 
 interface JSONValue: JSONElement {
-    fun getValue(): String
     override fun accept(visitor: Visitor) {
         visitor.visit(this)
     }
