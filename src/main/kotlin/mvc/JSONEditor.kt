@@ -10,7 +10,7 @@ import javax.swing.JTextArea
 
 class JSONEditor(private val jsonSource: JSONStructure) {
 
-    private val frame = JFrame("JSON Editor - Java Swing Sucks")
+    private val frame = JFrame("JSON Editor")
     private val srcArea = JTextArea()
 
     init {

@@ -2,7 +2,11 @@ package mvc
 
 import JSONArray
 import JSONArrayObserver
+import JSONBool
+import JSONDouble
 import JSONElement
+import JSONInt
+import JSONNull
 import JSONObject
 import JSONObjectEntry
 import JSONObjectObserver
@@ -32,55 +36,100 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
         return object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent?) {
                 if (SwingUtilities.isRightMouseButton(e)) {
-                    val menu = JPopupMenu("Message")
+                    val menu = JPopupMenu()
 
                     val add = JButton("Add")
                     add.addActionListener {
+                        menu.isVisible = false
 
+                        val addParent = panelMatches[(e?.component as JPanel)]?.jsonParent
+                        add(addParent)
                     }
 
-                    val del = JMenu("Delete")
                     var index = 0
-
+                    val del = JMenu("Delete")
                     (e?.component as JPanel).components.forEach {
                         val menuItem = JMenuItem(it.name)
-                        val teste = index
+                        val arrayIndex = index
 
                         menuItem.addActionListener {
-                            val parent = panelMatches[e.component]?.jsonParent
-
-                            if (parent is JSONObject)
-                                parent.deleteElement(menuItem.text)
-                            else
-                                (parent as JSONArray).deleteElement(teste)
-
-                            rootPanel.jPanel.removeAll()
-
-                            /*
-                            * Se esta funçao estiver dentro do deleteElement, dá esta exceção:
-                            * Exception in thread "AWT-EventQueue-0" java.util.ConcurrentModificationException
-                            *
-                            * se ficasse lá, a UI continuava a funcionar normalmente, mas dá essa exceçao
-                            * se estiver aqui, a UI tb funciona normalmente, mas ja nao da essa exceçao
-                            *
-                            * */
-                            reparse()
+                            val delParent = panelMatches[e.component]?.jsonParent
+                            remove(delParent, arrayIndex, menuItem)
                         }
                         del.add(menuItem)
                         index += 1
                     }
+
                     menu.add(add)
                     menu.add(del)
-                    menu.show(e.component, e.x, e.y);
+                    menu.show(e.component, e.x, e.y)
                 }
             }
         }
     }
 
+    fun add(addParent: JSONElement?) {
+        val key = JTextField(10)
+        val value = JTextField(10)
+
+        if (addParent is JSONObject) {
+            val panel = JPanel().apply {
+                add(JLabel("Key:"))
+                add(key)
+                add(Box.createHorizontalStrut(15)) // a spacer
+                add(JLabel("Value:"))
+                add(value)
+            }
+
+            val result = JOptionPane.showConfirmDialog(null, panel,
+                "Enter the key, value pair", JOptionPane.OK_CANCEL_OPTION)
+
+            if (result == JOptionPane.OK_OPTION) {
+
+                val jsonInput = getJSONElement(value.text)
+                addObservers(jsonInput)
+
+                addParent.addElement(key.text, jsonInput)
+                reparse()
+            }
+
+        } else if (addParent is JSONArray) {
+            val panel = JPanel().apply {
+                add(JLabel("Value:"))
+                add(value)
+            }
+
+            val result = JOptionPane.showConfirmDialog(null, panel,
+                "Enter the value", JOptionPane.OK_CANCEL_OPTION)
+
+            if (result == JOptionPane.OK_OPTION) {
+
+                val jsonInput = getJSONElement(value.text)
+                addObservers(jsonInput)
+
+                addParent.addElement(jsonInput)
+                reparse()
+            }
+        }
+    }
+
+    fun remove(delParent: JSONElement?, arrayIndex: Int, menuItem: JMenuItem) {
+        if (delParent is JSONObject)
+            delParent.deleteElement(menuItem.text)
+        else
+            (delParent as JSONArray).deleteElement(arrayIndex)
+
+        reparse()
+    }
+
+    fun replace() {
+        reparse()
+    }
+
     private fun addObservers(jsonElement: JSONElement){
         (jsonElement as? JSONArray)?.addObserver(object: JSONArrayObserver {
             override fun elementAdded(value: JSONElement) {
-                //TODO
+                srcArea.text = jsonSource.toString()
             }
 
             override fun elementRemoved(index: Int) {
@@ -89,15 +138,13 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
 
             override fun elementReplaced(index: Int, new: JSONElement) {
                 srcArea.text = jsonSource.toString()
+                replace()
             }
-
         })
 
         (jsonElement as? JSONObject)?.addObserver(object: JSONObjectObserver {
             override fun elementAdded(value: JSONElement) {
-                //TODO
-                // If new element is key-value, add it to the existent obj
-                // If new element is just a value, convert the parent to a JSONArray
+                srcArea.text = jsonSource.toString()
             }
 
             override fun elementRemoved(key: String) {
@@ -106,15 +153,9 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
 
             override fun elementReplaced(key: String, new: JSONElement) {
                 srcArea.text = jsonSource.toString()
+                replace()
             }
-
         })
-    }
-
-    fun reparse() {
-        parse(jsonSource = jsonSource, firstRun = false)
-        rootPanel.jPanel.revalidate()
-        rootPanel.jPanel.repaint()
     }
 
     fun parse(parent: JSONPanel = rootPanel, jsonSource: JSONElement, firstRun: Boolean = true): JSONPanel {
@@ -126,7 +167,7 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
                     val arrayTextfield = this
                     addFocusListener(object : FocusAdapter() {
                         override fun focusLost(e: FocusEvent) {  // Modify element
-                            (parent.jsonParent as JSONArray).replaceElement(parent.jPanel.components.indexOf(e.source), JSONString(arrayTextfield.text))
+                            (parent.jsonParent as JSONArray).replaceElement(parent.jPanel.components.indexOf(e.source), getJSONElement(arrayTextfield.text))
                         }
                     })
                 }).name = jsonSource.toString()
@@ -192,11 +233,11 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
 
                         add(JLabel(jsonSource.entry.key))
 
-                        add(JTextField(jsonSource.entry.value.toString()).apply {
+                        add(JTextField((jsonSource.entry.value as JSONValue).toString()).apply {
                             val objectTextfield = this
                             addFocusListener(object : FocusAdapter() {
                                 override fun focusLost(e: FocusEvent) {
-                                    (parent.jsonParent as JSONObject).replaceElement(jsonSource.entry.key, JSONString(objectTextfield.text))
+                                    (parent.jsonParent as JSONObject).replaceElement(jsonSource.entry.key, getJSONElement(objectTextfield.text))
                                 }
                             })
                         })
@@ -224,6 +265,40 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
             }
         }
         return rootPanel
+    }
+
+    private fun reparse() {
+        rootPanel.jPanel.removeAll()
+        parse(jsonSource = jsonSource, firstRun = false)
+        rootPanel.jPanel.revalidate()
+        rootPanel.jPanel.repaint()
+    }
+
+    private fun getJSONElement(text: String): JSONElement {
+        if (text.toIntOrNull() != null) {
+            return JSONInt(text.toIntOrNull()!!)
+        }
+
+        if (text.toDoubleOrNull() != null) {
+            return JSONDouble(text.toDoubleOrNull()!!)
+        }
+
+        return when (text) {
+            "true" -> JSONBool(true)
+            "false" -> JSONBool(false)
+            "null" -> JSONNull
+            "__Array" -> {
+                val array = JSONArray()
+                array.addElement(JSONNull)
+                array
+            }
+            "__Object" -> {
+                val obj = JSONObject()
+                obj.addElement("placeholder", JSONString(""))
+                obj
+            }
+            else -> JSONString(text)
+        }
     }
 }
 
