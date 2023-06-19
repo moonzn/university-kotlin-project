@@ -48,4 +48,4 @@ fun main() {
     mainObject.addElement("cursos", courses)
 
     JSONEditor(mainObject)
-    }
+}

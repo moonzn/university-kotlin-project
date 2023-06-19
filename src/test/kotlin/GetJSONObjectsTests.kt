@@ -3,11 +3,11 @@ import kotlin.test.assertEquals
 
 class GetJSONObjectsTests {
 
-    val mainObject = JSONObject()
-    val array = JSONArray()
-    val arrayObject1 = JSONObject()
-    val arrayObject2 = JSONObject()
-    val arrayObject3 = JSONObject()
+    private val mainObject = JSONObject()
+    private val array = JSONArray()
+    private val arrayObject1 = JSONObject()
+    private val arrayObject2 = JSONObject()
+    private val arrayObject3 = JSONObject()
 
     @Test
     fun outlinedExample() {
@@ -35,7 +35,7 @@ class GetJSONObjectsTests {
         val objectsVisitor = GetJSONObjectsVisitor(containsKeys=listOf("numero", "nome"))
         mainObject.accept(objectsVisitor)
 
-        val expected = mutableListOf<JSONObject>(arrayObject1, arrayObject2, arrayObject3)
+        val expected = mutableListOf(arrayObject1, arrayObject2, arrayObject3)
 
         assertEquals(expected, objectsVisitor.getJSONObjects())
     }
@@ -67,7 +67,7 @@ class GetJSONObjectsTests {
         val objectsVisitor = GetJSONObjectsVisitor(containsKeys=listOf("numero", "nome"))
         mainObject.accept(objectsVisitor)
 
-        val expected = mutableListOf<JSONObject>(arrayObject2, arrayObject3)
+        val expected = mutableListOf(arrayObject2, arrayObject3)
 
         assertEquals(expected, objectsVisitor.getJSONObjects())
     }

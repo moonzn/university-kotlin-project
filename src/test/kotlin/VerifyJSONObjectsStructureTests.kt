@@ -5,11 +5,11 @@ import kotlin.test.assertTrue
 
 class VerifyJSONObjectsStructureTests {
 
-    val mainObject = JSONObject()
-    val array = JSONArray()
-    val arrayObject1 = JSONObject()
-    val arrayObject2 = JSONObject()
-    val arrayObject3 = JSONObject()
+    private val mainObject = JSONObject()
+    private val array = JSONArray()
+    private val arrayObject1 = JSONObject()
+    private val arrayObject2 = JSONObject()
+    private val arrayObject3 = JSONObject()
 
     @Test
     fun outlinedExample() {
