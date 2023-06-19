@@ -35,10 +35,10 @@ class JSONArray: JSONStructure {
     override fun prettyToString(indent: String): String {
         val childIndent = "$indent\t"  // It will always add a tab
         return children.joinToString(
-            prefix = "[\n$childIndent",
-            postfix = "\n$indent\t]",
-            separator = ",\n$childIndent",
-            transform = { it.prettyToString(childIndent) }  // Pretty print child
+            prefix = "$indent[",
+            postfix = "\n$indent]",
+            separator = ",",
+            transform = { "\n" + it.prettyToString(childIndent) }  // Pretty print child
         )
     }
 
@@ -159,10 +159,15 @@ class JSONObject: JSONStructure {
     override fun prettyToString(indent: String): String {
         val childIndent = "$indent\t"
         return children.entries.joinToString(
-            prefix = "{\n$childIndent",
+            prefix = "$indent{",
             postfix = "\n$indent}",
-            separator = ",\n$childIndent",
-            transform = { "\"${it.key}\": ${it.value.prettyToString()}" }
+            separator = ",",
+            transform = {
+                if(it.value is JSONValue)
+                    "\n$childIndent" + "\"${it.key}\": ${it.value.prettyToString()}"
+                else
+                    "\n$childIndent" + "\"${it.key}\": \n${it.value.prettyToString(childIndent)}"
+            }
         )
     }
 
