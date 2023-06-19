@@ -385,10 +385,10 @@ false
 }]
 ```
 
-## Convert to JSON element
+### Convert to JSON element
 Every conversion will be made through the ```JSONGenerator().generate(initiator)``` function where the initiator argument corresponds to the data class/collection/map/type... etc you want to convert.
 
-### Data class to JSONElement
+#### Data class to JSONElement
 Always converted to ```JSONObject```.
 
 ```kotlin
@@ -411,7 +411,7 @@ Output:
 }
 ```
 
-### Collection to JSONElement
+#### Collection to JSONElement
 Always converted to ```JSONArray```.
 
 ```kotlin
@@ -441,7 +441,7 @@ Output:
 ```
 
 
-### Map to JSONElement
+#### Map to JSONElement
 Always converted to ```JSONObject```.
 ```kotlin
 fun main() {
@@ -459,7 +459,7 @@ Output:
 }
 ```
 
-### Primitive types or null to JSONElement
+#### Primitive types or null to JSONElement
 ```kotlin
 fun main() {
     println(JSONGenerator().generate(initiator = 10)::class)
@@ -480,7 +480,7 @@ class JSONNull
 ```
 
 
-### Enumerator to JSONElement
+#### Enumerator to JSONElement
 An enumerator instance will be always converted to ```JSONString```.
 
 ```kotlin
@@ -501,7 +501,7 @@ Chemistry
 class JSONString
 ```
 
-### Annotations
+#### Annotations
 
 You may customize the JSON output of the data classes you will convert to JSON. 
 There are three available annotations:
@@ -538,12 +538,12 @@ Output:
 ```
 
 
-## Monitor changes through Observers
+### Monitor changes through Observers
 If you need to trigger a specific operation everytime a JSON element gets changed/replaced, you can do it through ```JSONArrayObserver``` and ```JSONObjectObserver``` observers. 
 
 **Note:** This is only applies to ```JSONArray``` and ```JSONObject``` as the changes will occur within those elements.
 
-### JSONArray
+#### Monitor JSONArray
 ```kotlin
 fun main() {
     val subjects = JSONArray()
@@ -586,7 +586,7 @@ Final result:
 	]
 ```
 
-### JSONObject
+#### Monitor JSONObject
 ```kotlin
 fun main() {
     val mrWhite = JSONObject()
