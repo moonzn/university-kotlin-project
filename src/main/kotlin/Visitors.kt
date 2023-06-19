@@ -5,9 +5,9 @@ class GetJSONElementsVisitor(val key: String): Visitor {
 
     fun getJSONElements(): MutableList<JSONElement> = jsonElements
 
-    override fun visit(c: Map.Entry<String, JSONElement>): Boolean {
-        if (c.key == key) {
-            jsonElements.add(c.value)
+    override fun visit(k: String, v: JSONElement): Boolean {
+        if (k == key) {
+            jsonElements.add(v)
         }
         return true
     }
@@ -28,17 +28,17 @@ class GetJSONObjectsVisitor(val containsKeys: List<String>): Visitor {
 
 class VerifyJSONElementTypeVisitor(val key: String, val clazz: KClass<*>): Visitor {
     private var integrity = true
-    private val offenders = mutableListOf<Map.Entry<String, JSONElement>>()
+    private val offenders = mutableListOf<Pair<String, JSONElement>>()
 
     fun integrity(): Boolean = integrity
 
-    fun offenders(): MutableList<Map.Entry<String, JSONElement>> = offenders
+    fun offenders(): MutableList<Pair<String, JSONElement>> = offenders
 
-    override fun visit(c: Map.Entry<String, JSONElement>): Boolean {
+    override fun visit(k: String, v: JSONElement): Boolean {
 
-        if (c.key == key && !clazz.isInstance(c.value)) {
+        if (k == key && !clazz.isInstance(v)) {
             integrity = false
-            offenders.add(c)
+            offenders.add(Pair(k, v))
         }
         return true
     }
@@ -52,9 +52,9 @@ class VerifyJSONObjectsStructureVisitor(val key: String, val structure: List<Str
 
     fun offenders(): MutableList<JSONElement> = offenders
 
-    override fun visit(c: Map.Entry<String, JSONElement>): Boolean {
-        if (c.key == key && c.value is JSONArray){
-            (c.value as JSONArray).getChildren().forEach {
+    override fun visit(k: String, v: JSONElement): Boolean {
+        if (k == key && v is JSONArray){
+            v.getChildren().forEach {
                 if (it !is JSONObject) {
                     integrity = false
                     offenders.add(it)
@@ -67,4 +67,5 @@ class VerifyJSONObjectsStructureVisitor(val key: String, val structure: List<Str
         }
         return true
     }
+
 }

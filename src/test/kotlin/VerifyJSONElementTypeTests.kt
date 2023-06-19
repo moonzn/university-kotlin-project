@@ -37,7 +37,7 @@ class VerifyJSONElementTypeTests {
         val valueTypeVisitor = VerifyJSONElementTypeVisitor(key="numero", clazz=JSONInt::class)
         mainObject.accept(valueTypeVisitor)
 
-        val expected = mutableListOf<Map.Entry<String, JSONElement>>()
+        val expected = mutableListOf<Pair<String, JSONElement>>()
 
         assertTrue(valueTypeVisitor.integrity())
         assertEquals(expected, valueTypeVisitor.offenders())
@@ -69,9 +69,9 @@ class VerifyJSONElementTypeTests {
         val valueTypeVisitor = VerifyJSONElementTypeVisitor(key="numero", clazz=JSONInt::class)
         mainObject.accept(valueTypeVisitor)
 
-        val expected = mapOf<String, JSONElement>(Pair("numero", JSONDouble(3.0)))
+        val expected = mutableListOf<Pair<String, JSONElement>>(Pair("numero", JSONDouble(3.0)))
 
         assertFalse(valueTypeVisitor.integrity())
-        assertEquals(expected.entries.toMutableList(), valueTypeVisitor.offenders())
+        assertEquals(expected, valueTypeVisitor.offenders())
     }
 }

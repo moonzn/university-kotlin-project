@@ -185,7 +185,10 @@ class JSONObject: JSONStructure {
     override fun accept(visitor: Visitor) {
         if (visitor.visit(this)) {  // Successful visit
             children.forEach {
-                it.accept(visitor)  // Visit child
+                if (visitor.visit(it.key, it.value)) {
+                    it.value.accept(visitor)
+                }
+                visitor.endVisit(it.key, it.value)
             }
         }
         visitor.endVisit(this)
@@ -256,9 +259,8 @@ class JSONObject: JSONStructure {
     fun getChildren() = children
 }
 
-
-// Entradas de um mapa como um objeto para ser mais facil de lidar
 data class JSONObjectEntry(val entry: Map.Entry<String, JSONElement>): JSONElement {
+    /** This class represents a JSONObject entry, i.e. (key, value) entry **/
 
     private val JSONObjectEntry.key: String
         get() = entry.key
@@ -276,12 +278,4 @@ data class JSONObjectEntry(val entry: Map.Entry<String, JSONElement>): JSONEleme
 
     override fun accept(visitor: Visitor) {
     }
-}
-
-// Visitante saber visitar as entradas do mapa
-fun Map.Entry<String, JSONElement>.accept(visitor: Visitor) {
-    if (visitor.visit(this)) {
-        this.value.accept(visitor)
-    }
-    visitor.endVisit(this)
 }
