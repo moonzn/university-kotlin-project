@@ -1,8 +1,9 @@
+
+/*** Interfaces ***/
+
 interface JSONElement {
     override fun toString(): String
-
-    fun prettyPrint(indent: String = ""): String
-
+    fun prettyToString(indent: String = ""): String
     fun accept(visitor: Visitor)
 }
 
