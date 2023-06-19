@@ -235,7 +235,7 @@ After:
 ```
 
 
-### Searches and validations
+### Visitors: Searches and validations
 
 
 #### Search for elements with key X
@@ -385,7 +385,7 @@ false
 }]
 ```
 
-### Convert to JSON element
+### Reflection: Convert to JSON element
 Every conversion will be made through the ```JSONGenerator().generate(initiator)``` function where the initiator argument corresponds to the data class/collection/map/type... etc you want to convert.
 
 #### Data class to JSONElement
