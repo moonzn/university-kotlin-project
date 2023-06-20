@@ -324,11 +324,13 @@ class JSONSourceParser(private val srcArea: JTextArea, private val jsonSource: J
             "__Array" -> {
                 val array = JSONArray()
                 array.addElement(JSONNull)
+                addObservers(array)
                 array
             }
             "__Object" -> {
                 val obj = JSONObject()
                 obj.addElement("placeholder", JSONString(""))
+                addObservers(obj)
                 obj
             }
             else -> JSONString(text)
