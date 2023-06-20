@@ -10,7 +10,7 @@ import javax.swing.JTextArea
 
 class JSONEditor(private val jsonSource: JSONStructure) {
 
-    private val frame = JFrame("JSON Editor")
+    private val frame = JFrame("JSON Editor - Programação Avançada 2022/2023 | Docente: André Santos | Realizado por: Constança Silva e Raúl Nascimento | ISCTE-IUL |")
     private val srcArea = JTextArea()
 
     init {
